@@ -46,7 +46,7 @@ export default function Navbar() {
 
         {user && (
           <>
-            <span style={styles.userInfo}>👤 {user.full_name}</span>
+            <span style={styles.userInfo}>👤 {user.first_name} {user.last_name}</span>
             <button onClick={handleLogout} style={styles.logout}>Logout</button>
           </>
         )}

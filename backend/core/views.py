@@ -1,20 +1,37 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .models import Profiles, RepairRequests, Services, RequestUpdates
+from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability
 from .serializers import (
     RegisterSerializer, ProfileSerializer,
-    RepairRequestSerializer, ServiceSerializer
+    RepairRequestSerializer, ServiceSerializer,
+    MasterSerializer, AvailabilitySerializer
 )
+
+
+# ─── AUTH ────────────────────────────────────────────────
 
 @api_view(['POST'])
 def register(request):
     data = request.data
 
-    if Profiles.objects.filter(email=data.get('email')).exists():
+    required = ['first_name', 'last_name', 'email', 'password', 'role']
+    for field in required:
+        if not data.get(field, '').strip():
+            return Response({'error': f'{field} is required'}, status=400)
+
+    if data['role'] not in ['customer', 'operator', 'master']:
+        return Response({'error': 'Invalid role'}, status=400)
+
+    if len(data['password']) < 4:
+        return Response({'error': 'Password must be at least 4 characters'}, status=400)
+
+    if '@' not in data['email']:
+        return Response({'error': 'Invalid email address'}, status=400)
+
+    if Profiles.objects.filter(email=data['email']).exists():
         return Response({'error': 'Email already registered'}, status=400)
 
     serializer = RegisterSerializer(data=data)
-
     if serializer.is_valid():
         serializer.save()
         return Response({'message': 'User registered successfully'}, status=201)
@@ -24,16 +41,21 @@ def register(request):
 
 @api_view(['POST'])
 def login(request):
-    email = request.data.get('email')
-    password = request.data.get('password')
+    email = request.data.get('email', '').strip()
+    password = request.data.get('password', '').strip()
 
-    user = Profiles.objects.filter(email=email, password=password).first()
+    if not email or not password:
+        return Response({'error': 'Email and password are required'}, status=400)
 
-    if not user:
+    try:
+        user = Profiles.objects.get(email=email, password=password)
+        serializer = ProfileSerializer(user)
+        return Response(serializer.data, status=200)
+    except Profiles.DoesNotExist:
         return Response({'error': 'Invalid email or password'}, status=401)
 
-    serializer = ProfileSerializer(user)
-    return Response(serializer.data, status=200)
+
+# ─── SERVICES ────────────────────────────────────────────
 
 @api_view(['GET'])
 def get_services(request):
@@ -42,22 +64,44 @@ def get_services(request):
     return Response(serializer.data)
 
 
+# ─── REQUESTS ────────────────────────────────────────────
+
 @api_view(['POST'])
 def create_request(request):
     data = request.data
 
+    if not data.get('customer_id'):
+        return Response({'error': 'Not logged in'}, status=400)
+
+    if not data.get('service_id'):
+        return Response({'error': 'Please select a service'}, status=400)
+
+    if not data.get('address', '').strip():
+        return Response({'error': 'Address is required'}, status=400)
+
+    if len(data.get('address', '')) > 255:
+        return Response({'error': 'Address is too long'}, status=400)
+
+    if len(data.get('description', '')) > 500:
+        return Response({'error': 'Description is too long (max 500 characters)'}, status=400)
+
     try:
-        customer = Profiles.objects.get(profile_id=data.get('customer_id'))
-        service = Services.objects.get(service_id=data.get('service_id'))
-    except (Profiles.DoesNotExist, Services.DoesNotExist):
-        return Response({'error': 'Invalid customer or service'}, status=400)
+        customer = Profiles.objects.get(
+            profile_id=data['customer_id'], role='customer')
+    except Profiles.DoesNotExist:
+        return Response({'error': 'Customer not found'}, status=404)
+
+    try:
+        service = Services.objects.get(service_id=data['service_id'])
+    except Services.DoesNotExist:
+        return Response({'error': 'Service not found'}, status=404)
 
     repair_request = RepairRequests.objects.create(
         customer=customer,
         service=service,
         description=data.get('description', ''),
-        address=data.get('address'),
-        scheduled_at=data.get('scheduled_at'),
+        address=data['address'].strip(),
+        scheduled_at=data.get('scheduled_at') or None,
         status='new'
     )
 
@@ -70,10 +114,14 @@ def get_requests(request):
     role = request.query_params.get('role')
     user_id = request.query_params.get('user_id')
 
+    if not role or not user_id:
+        return Response({'error': 'role and user_id are required'}, status=400)
+
     if role == 'customer':
-        requests = RepairRequests.objects.filter(customer_id=user_id).order_by('-created_at')
+        requests = RepairRequests.objects.filter(
+            customer_id=user_id
+        ).order_by('-created_at')
     else:
-        # operator sees all
         requests = RepairRequests.objects.all().order_by('-created_at')
 
     serializer = RepairRequestSerializer(requests, many=True)
@@ -87,19 +135,20 @@ def update_status(request, request_id):
     except RepairRequests.DoesNotExist:
         return Response({'error': 'Request not found'}, status=404)
 
-    old_status = repair_request.status
-    new_status = request.data.get('status')
-    note = request.data.get('note', '')
+    new_status = request.data.get('status', '').strip()
     updated_by_id = request.data.get('updated_by')
+
+    if not new_status:
+        return Response({'error': 'Status is required'}, status=400)
 
     allowed = ['new', 'assigned', 'in_progress', 'completed', 'cancelled']
     if new_status not in allowed:
-        return Response({'error': 'Invalid status'}, status=400)
+        return Response({'error': f'Invalid status. Allowed: {allowed}'}, status=400)
 
+    old_status = repair_request.status
     repair_request.status = new_status
     repair_request.save()
 
-    # log the change
     try:
         updated_by = Profiles.objects.get(profile_id=updated_by_id)
         RequestUpdates.objects.create(
@@ -107,10 +156,158 @@ def update_status(request, request_id):
             updated_by=updated_by,
             old_status=old_status,
             new_status=new_status,
+            note=request.data.get('note', '')
+        )
+    except Profiles.DoesNotExist:
+        pass
+
+    return Response(RepairRequestSerializer(repair_request).data)
+
+
+@api_view(['PATCH'])
+def assign_master(request, request_id):
+    try:
+        repair_request = RepairRequests.objects.get(request_id=request_id)
+    except RepairRequests.DoesNotExist:
+        return Response({'error': 'Request not found'}, status=404)
+
+    master_id = request.data.get('master_id')
+    updated_by_id = request.data.get('updated_by')
+
+    if not master_id:
+        return Response({'error': 'Please select a master'}, status=400)
+
+    if repair_request.status == 'completed':
+        return Response({'error': 'Cannot reassign a completed request'}, status=400)
+
+    if repair_request.status == 'cancelled':
+        return Response({'error': 'Cannot assign a cancelled request'}, status=400)
+
+    try:
+        master = Profiles.objects.get(profile_id=master_id, role='master')
+    except Profiles.DoesNotExist:
+        return Response({'error': 'Master not found'}, status=404)
+
+    old_status = repair_request.status
+    repair_request.assigned_master = master
+    repair_request.status = 'assigned'
+    repair_request.save()
+
+    try:
+        updated_by = Profiles.objects.get(profile_id=updated_by_id)
+        RequestUpdates.objects.create(
+            request=repair_request,
+            updated_by=updated_by,
+            old_status=old_status,
+            new_status='assigned',
+            note=f'Assigned to {master.first_name} {master.last_name}'
+        )
+    except Profiles.DoesNotExist:
+        pass
+
+    return Response(RepairRequestSerializer(repair_request).data)
+
+
+@api_view(['PATCH'])
+def update_progress(request, request_id):
+    try:
+        repair_request = RepairRequests.objects.get(request_id=request_id)
+    except RepairRequests.DoesNotExist:
+        return Response({'error': 'Request not found'}, status=404)
+
+    master_id = request.data.get('master_id')
+    new_status = request.data.get('status', '').strip()
+    note = request.data.get('note', '').strip()
+
+    if not new_status:
+        return Response({'error': 'Status is required'}, status=400)
+
+    if repair_request.assigned_master_id != master_id:
+        return Response({'error': 'You are not assigned to this job'}, status=403)
+
+    if repair_request.status == 'completed':
+        return Response({'error': 'Job is already completed'}, status=400)
+
+    allowed = ['in_progress', 'completed']
+    if new_status not in allowed:
+        return Response({'error': 'Master can only set in_progress or completed'}, status=400)
+
+    old_status = repair_request.status
+    repair_request.status = new_status
+    repair_request.save()
+
+    try:
+        master = Profiles.objects.get(profile_id=master_id)
+        RequestUpdates.objects.create(
+            request=repair_request,
+            updated_by=master,
+            old_status=old_status,
+            new_status=new_status,
             note=note
         )
     except Profiles.DoesNotExist:
         pass
 
-    serializer = RepairRequestSerializer(repair_request)
+    return Response(RepairRequestSerializer(repair_request).data)
+
+
+# ─── MASTERS ─────────────────────────────────────────────
+
+@api_view(['GET'])
+def get_masters(request):
+    masters = Profiles.objects.filter(role='master')
+    serializer = MasterSerializer(masters, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_master_jobs(request, master_id):
+    if not Profiles.objects.filter(profile_id=master_id, role='master').exists():
+        return Response({'error': 'Master not found'}, status=404)
+
+    jobs = RepairRequests.objects.filter(
+        assigned_master_id=master_id
+    ).order_by('-created_at')
+
+    serializer = RepairRequestSerializer(jobs, many=True)
+    return Response(serializer.data)
+
+
+# ─── AVAILABILITY ─────────────────────────────────────────
+
+@api_view(['GET'])
+def get_availability(request):
+    availability = MasterAvailability.objects.select_related('master').all()
+    serializer = AvailabilitySerializer(availability, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+def update_availability(request):
+    master_id = request.data.get('master_id')
+    is_available = request.data.get('is_available')
+    notes = request.data.get('notes', '').strip()
+
+    if master_id is None:
+        return Response({'error': 'master_id is required'}, status=400)
+
+    if is_available is None:
+        return Response({'error': 'is_available is required'}, status=400)
+
+    if len(notes) > 255:
+        return Response({'error': 'Notes too long (max 255 characters)'}, status=400)
+
+    try:
+        master = Profiles.objects.get(profile_id=master_id, role='master')
+    except Profiles.DoesNotExist:
+        return Response({'error': 'Master not found'}, status=404)
+
+    availability, created = MasterAvailability.objects.update_or_create(
+        master=master,
+        defaults={
+            'is_available': is_available,
+            'notes': notes,
+        }
+    )
+
+    return Response(AvailabilitySerializer(availability).data)

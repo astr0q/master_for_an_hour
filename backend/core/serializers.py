@@ -1,5 +1,5 @@
-from rest_framework import serializers
-from .models import Profiles, RepairRequests, Services
+from rest_framework import serializers  # type: ignore[import]
+from .models import Profiles, RepairRequests, Services, MasterAvailability
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -19,7 +19,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profiles
-        fields = ['profile_id', 'full_name', 'email', 'role', 'phone']
+        fields = ['profile_id', 'first_name',
+                  'last_name', 'email', 'role', 'phone']
 
 
 class ServiceSerializer(serializers.ModelSerializer):
@@ -29,12 +30,17 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class RepairRequestSerializer(serializers.ModelSerializer):
-    customer_name = serializers.CharField(
-        source='customer.full_name', read_only=True)
+    customer_name = serializers.SerializerMethodField()
     service_name = serializers.CharField(source='service.name', read_only=True)
-    assigned_master_name = serializers.CharField(
-        source='assigned_master.full_name', read_only=True, default=None
-    )
+    assigned_master_name = serializers.SerializerMethodField()
+
+    def get_customer_name(self, obj):
+        return f"{obj.customer.first_name} {obj.customer.last_name}"
+
+    def get_assigned_master_name(self, obj):
+        if obj.assigned_master:
+            return f"{obj.assigned_master.first_name} {obj.assigned_master.last_name}"
+        return None
 
     class Meta:
         model = RepairRequests
@@ -45,3 +51,19 @@ class RepairRequestSerializer(serializers.ModelSerializer):
             'assigned_master_id', 'assigned_master_name',
             'created_at'
         ]
+
+
+class MasterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profiles
+        fields = ['profile_id', 'first_name', 'last_name', 'email', 'phone']
+
+
+class AvailabilitySerializer(serializers.ModelSerializer):
+    master_name = serializers.CharField(
+        source='master.full_name', read_only=True)
+
+    class Meta:
+        model = MasterAvailability
+        fields = ['availability_id', 'master_id', 'master_name',
+                  'is_available', 'notes', 'updated_at']
