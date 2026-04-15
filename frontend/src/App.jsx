@@ -9,10 +9,11 @@ import MyRequests from './pages/myRequest';
 import AllRequests from './pages/allRequest';
 import MyJobs from './pages/myJobs';
 import Availability from './pages/availability';
+import History from './pages/history';
+import Stats from './pages/stats';
+import Reports from './pages/reports';
 
 function Assign() { return <h2>Assign Masters</h2>; }
-function Reports() { return <h2>Reports</h2>; }
-
 export default function App() {
   return (
     <AuthProvider>
@@ -36,15 +37,21 @@ export default function App() {
             <Route path="/assign" element={
               <ProtectedRoute roles={['operator']}><Assign /></ProtectedRoute>
             }/>
-            <Route path="/reports" element={
-              <ProtectedRoute roles={['operator']}><Reports /></ProtectedRoute>
-            }/>
 
             <Route path="/my-jobs" element={
               <ProtectedRoute roles={['master']}><MyJobs /></ProtectedRoute>
             }/>
             <Route path="/availability" element={
               <ProtectedRoute roles={['master']}><Availability /></ProtectedRoute>
+            }/>
+            <Route path="/history" element={
+            <ProtectedRoute roles={['customer', 'operator']}><History /></ProtectedRoute>
+            }/>
+            <Route path="/stats" element={
+            <ProtectedRoute roles={['operator']}><Stats /></ProtectedRoute>
+            }/>
+            <Route path="/reports" element={
+            <ProtectedRoute roles={['operator']}><Reports /></ProtectedRoute>
             }/>
 
             <Route path="*" element={<Navigate to="/login" />} />

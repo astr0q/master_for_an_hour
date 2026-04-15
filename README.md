@@ -64,3 +64,12 @@ Framework: Django for backend management
 Database: Supabase (for data storage and user authentication)
 Frontend: Django templates for user interface
 Development Paradigm: Object-Oriented Programming (OOP)
+
+-- starts backend
+cd backend
+venv\Scripts\activate
+python manage.py runserver
+
+-- start frontend
+cd frontend
+npm run dev

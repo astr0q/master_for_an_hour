@@ -21,3 +21,7 @@ export const getMasterJobs = (masterId) =>
   API.get(`/requests/master/${masterId}/`);
 export const updateProgress = (requestId, data) =>
   API.patch(`/requests/${requestId}/progress/`, data);
+export const getHistory = (params) =>
+  API.get('/requests/history/', { params });
+export const getStats = () => API.get('/stats/');
+export const getReports = (params) => API.get('/reports/', { params });

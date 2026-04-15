@@ -1,14 +1,14 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework.decorators import api_view  # type: ignore[import]
+from rest_framework.response import Response  # type: ignore[import]
 from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability
 from .serializers import (
     RegisterSerializer, ProfileSerializer,
     RepairRequestSerializer, ServiceSerializer,
     MasterSerializer, AvailabilitySerializer
 )
+from django.db.models import Count, Q
+from datetime import datetime, timedelta
 
-
-# ─── AUTH ────────────────────────────────────────────────
 
 @api_view(['POST'])
 def register(request):
@@ -55,16 +55,12 @@ def login(request):
         return Response({'error': 'Invalid email or password'}, status=401)
 
 
-# ─── SERVICES ────────────────────────────────────────────
-
 @api_view(['GET'])
 def get_services(request):
     services = Services.objects.all()
     serializer = ServiceSerializer(services, many=True)
     return Response(serializer.data)
 
-
-# ─── REQUESTS ────────────────────────────────────────────
 
 @api_view(['POST'])
 def create_request(request):
@@ -251,8 +247,6 @@ def update_progress(request, request_id):
     return Response(RepairRequestSerializer(repair_request).data)
 
 
-# ─── MASTERS ─────────────────────────────────────────────
-
 @api_view(['GET'])
 def get_masters(request):
     masters = Profiles.objects.filter(role='master')
@@ -272,8 +266,6 @@ def get_master_jobs(request, master_id):
     serializer = RepairRequestSerializer(jobs, many=True)
     return Response(serializer.data)
 
-
-# ─── AVAILABILITY ─────────────────────────────────────────
 
 @api_view(['GET'])
 def get_availability(request):
@@ -311,3 +303,120 @@ def update_availability(request):
     )
 
     return Response(AvailabilitySerializer(availability).data)
+
+
+@api_view(['GET'])
+def get_history(request):
+    role = request.query_params.get('role')
+    user_id = request.query_params.get('user_id')
+    status_filter = request.query_params.get('status')
+    service_filter = request.query_params.get('service_id')
+    date_from = request.query_params.get('date_from')
+    date_to = request.query_params.get('date_to')
+
+    # base query — only finished requests
+    if role == 'customer':
+        queryset = RepairRequests.objects.filter(
+            customer_id=user_id,
+            status__in=['completed', 'cancelled']
+        )
+    else:
+        queryset = RepairRequests.objects.filter(
+            status__in=['completed', 'cancelled']
+        )
+
+    # optional filters
+    if status_filter:
+        queryset = queryset.filter(status=status_filter)
+
+    if service_filter:
+        queryset = queryset.filter(service_id=service_filter)
+
+    if date_from:
+        queryset = queryset.filter(created_at__date__gte=date_from)
+
+    if date_to:
+        queryset = queryset.filter(created_at__date__lte=date_to)
+
+    queryset = queryset.order_by('-created_at')
+    serializer = RepairRequestSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+def get_stats(request):
+    total_requests = RepairRequests.objects.count()
+    active_requests = RepairRequests.objects.filter(
+        status__in=['new', 'assigned', 'in_progress']
+    ).count()
+    completed_requests = RepairRequests.objects.filter(
+        status='completed').count()
+    cancelled_requests = RepairRequests.objects.filter(
+        status='cancelled').count()
+    total_masters = Profiles.objects.filter(role='master').count()
+    available_masters = MasterAvailability.objects.filter(
+        is_available=True).count()
+
+    # requests per service
+    by_service = (
+        RepairRequests.objects
+        .values('service__name')
+        .annotate(total=Count('request_id'))
+        .order_by('-total')
+    )
+
+    # requests per status
+    by_status = (
+        RepairRequests.objects
+        .values('status')
+        .annotate(total=Count('request_id'))
+        .order_by('-total')
+    )
+
+    return Response({
+        'total_requests': total_requests,
+        'active_requests': active_requests,
+        'completed_requests': completed_requests,
+        'cancelled_requests': cancelled_requests,
+        'total_masters': total_masters,
+        'available_masters': available_masters,
+        'by_service': list(by_service),
+        'by_status': list(by_status),
+    })
+
+
+@api_view(['GET'])
+def get_reports(request):
+    date_from = request.query_params.get('date_from')
+    date_to = request.query_params.get('date_to')
+    service_filter = request.query_params.get('service_id')
+    status_filter = request.query_params.get('status')
+
+    queryset = RepairRequests.objects.all()
+
+    if date_from:
+        queryset = queryset.filter(created_at__date__gte=date_from)
+    if date_to:
+        queryset = queryset.filter(created_at__date__lte=date_to)
+    if service_filter:
+        queryset = queryset.filter(service_id=service_filter)
+    if status_filter:
+        queryset = queryset.filter(status=status_filter)
+
+    queryset = queryset.order_by('-created_at')
+
+    # summary counts for the filtered set
+    summary = {
+        'total': queryset.count(),
+        'completed': queryset.filter(status='completed').count(),
+        'cancelled': queryset.filter(status='cancelled').count(),
+        'in_progress': queryset.filter(status='in_progress').count(),
+        'new': queryset.filter(status='new').count(),
+        'assigned': queryset.filter(status='assigned').count(),
+    }
+
+    serializer = RepairRequestSerializer(queryset, many=True)
+    return Response({
+        'summary': summary,
+        'records': serializer.data,
+    })

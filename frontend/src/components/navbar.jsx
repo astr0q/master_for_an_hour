@@ -26,15 +26,18 @@ export default function Navbar() {
           <>
             <Link to="/new-request" style={styles.link}>New Request</Link>
             <Link to="/my-requests" style={styles.link}>My Requests</Link>
+            <Link to="/history" style={styles.link}>History</Link>
           </>
         )}
 
         {user?.role === 'operator' && (
           <>
-            <Link to="/all-requests" style={styles.link}>All Requests</Link>
-            <Link to="/assign" style={styles.link}>Assign Masters</Link>
-            <Link to="/reports" style={styles.link}>Reports</Link>
-          </>
+          <Link to="/all-requests" style={styles.link}>All Requests</Link>
+          <Link to="/assign" style={styles.link}>Assign Masters</Link>
+          <Link to="/history" style={styles.link}>History</Link>
+          <Link to="/stats" style={styles.link}>Stats</Link>
+          <Link to="/reports" style={styles.link}>Reports</Link>
+        </>
         )}
 
         {user?.role === 'master' && (
