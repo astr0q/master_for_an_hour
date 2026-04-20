@@ -1,13 +1,15 @@
 from rest_framework.decorators import api_view  # type: ignore[import]
 from rest_framework.response import Response  # type: ignore[import]
-from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability
+from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability, Notifications
 from .serializers import (
     RegisterSerializer, ProfileSerializer,
     RepairRequestSerializer, ServiceSerializer,
-    MasterSerializer, AvailabilitySerializer
+    MasterSerializer, AvailabilitySerializer,
+    NotificationSerializer
 )
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
+from django.utils import timezone
 
 
 @api_view(['POST'])
@@ -60,6 +62,17 @@ def get_services(request):
     services = Services.objects.all()
     serializer = ServiceSerializer(services, many=True)
     return Response(serializer.data)
+
+def create_notification(user_id, message):
+    try:
+        user = Profiles.objects.get(profile_id=user_id)
+        Notifications.objects.create(
+            user=user,
+            message=message,
+            created_at=timezone.now()
+        )
+    except Profiles.DoesNotExist:
+        pass
 
 
 @api_view(['POST'])
@@ -145,6 +158,12 @@ def update_status(request, request_id):
     repair_request.status = new_status
     repair_request.save()
 
+    # notify the customer when operator changes status
+    create_notification(
+        repair_request.customer_id,
+        f'Your repair request ({repair_request.service.name}) status changed to {new_status}'
+)
+
     try:
         updated_by = Profiles.objects.get(profile_id=updated_by_id)
         RequestUpdates.objects.create(
@@ -189,6 +208,12 @@ def assign_master(request, request_id):
     repair_request.status = 'assigned'
     repair_request.save()
 
+    # notify the master they have been assigned
+    create_notification(
+        master_id,
+        f'You have been assigned a new job: {repair_request.service.name} at {repair_request.address}'
+)
+
     try:
         updated_by = Profiles.objects.get(profile_id=updated_by_id)
         RequestUpdates.objects.create(
@@ -231,6 +256,12 @@ def update_progress(request, request_id):
     old_status = repair_request.status
     repair_request.status = new_status
     repair_request.save()
+
+    # notify the customer their job status changed
+    create_notification(
+        repair_request.customer_id,
+        f'Your repair request ({repair_request.service.name}) is now {new_status}'
+)
 
     try:
         master = Profiles.objects.get(profile_id=master_id)
@@ -420,3 +451,30 @@ def get_reports(request):
         'summary': summary,
         'records': serializer.data,
     })
+
+@api_view(['GET'])
+def get_notifications(request):
+    user_id = request.query_params.get('user_id')
+    notifications = Notifications.objects.filter(
+        user_id=user_id
+    ).order_by('-created_at')[:30]  # last 30 only
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['PATCH'])
+def mark_read(request, notification_id):
+    try:
+        notification = Notifications.objects.get(notification_id=notification_id)
+        notification.is_read = True
+        notification.save()
+        return Response({'message': 'Marked as read'})
+    except Notifications.DoesNotExist:
+        return Response({'error': 'Not found'}, status=404)
+
+
+@api_view(['PATCH'])
+def mark_all_read(request):
+    user_id = request.data.get('user_id')
+    Notifications.objects.filter(user_id=user_id, is_read=False).update(is_read=True)
+    return Response({'message': 'All marked as read'})

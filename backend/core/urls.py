@@ -18,4 +18,7 @@ urlpatterns = [
     path('availability/update/', views.update_availability),
     path('stats/', views.get_stats),
     path('reports/', views.get_reports),
+    path('notifications/', views.get_notifications),
+    path('notifications/read-all/', views.mark_all_read),
+    path('notifications/read/<int:notification_id>/', views.mark_read),
 ]

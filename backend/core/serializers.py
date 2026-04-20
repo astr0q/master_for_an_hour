@@ -1,5 +1,5 @@
 from rest_framework import serializers  # type: ignore[import]
-from .models import Profiles, RepairRequests, Services, MasterAvailability
+from .models import Profiles, RepairRequests, Services, MasterAvailability, Notifications
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -67,3 +67,8 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         model = MasterAvailability
         fields = ['availability_id', 'master_id', 'master_name',
                   'is_available', 'notes', 'updated_at']
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notifications
+        fields = ['notification_id', 'user_id', 'message', 'is_read', 'created_at']

@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getMasterJobs, updateProgress } from '../services/api';
 import { useAuth } from '../context/authContext';
+import Spinner from '../components/spinner';
+import PageWrapper from '../components/pageWrapper';
 
 const statusColors = {
   new: '#89b4fa',
@@ -12,15 +14,26 @@ const statusColors = {
 
 export default function MyJobs() {
   const { user } = useAuth();
+
   const [jobs, setJobs] = useState([]);
   const [notes, setNotes] = useState({});
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const fetchJobs = () => {
-    getMasterJobs(user.profile_id).then(res => setJobs(res.data));
+  const fetchJobs = async () => {
+    try {
+      setLoading(true);
+
+      const res = await getMasterJobs(user.profile_id);
+      setJobs(res.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  useEffect(() => { fetchJobs(); }, []);
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const handleNoteChange = (requestId, value) => {
     setNotes({ ...notes, [requestId]: value });
@@ -33,6 +46,7 @@ export default function MyJobs() {
         status: newStatus,
         note: notes[requestId] || '',
       });
+
       setMessage(`Job marked as ${newStatus}`);
       fetchJobs();
     } catch (err) {
@@ -40,76 +54,98 @@ export default function MyJobs() {
     }
   };
 
+  if (loading) {
+    return (
+      <PageWrapper>
+        <Spinner />
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div>
-      <h2>My Jobs</h2>
-      {jobs.length === 0 && <p>No jobs assigned to you yet.</p>}
-      {message && <p style={{ color: 'green' }}>{message}</p>}
+    <PageWrapper title="My Requests">
+      <div>
+        <h2>My Jobs</h2>
 
-      {jobs.map(job => (
-        <div key={job.request_id} style={styles.card}>
+        {jobs.length === 0 && <p>No jobs assigned to you yet.</p>}
 
-          <div style={styles.header}>
-            <strong>{job.service_name}</strong>
-            <span style={{
-              ...styles.badge,
-              backgroundColor: statusColors[job.status] || '#ccc'
-            }}>
-              {job.status}
-            </span>
-          </div>
+        {message && <p style={{ color: 'green' }}>{message}</p>}
 
-          <p>{job.address}</p>
-          <p>{job.description}</p>
-          <small>Customer: {job.customer_name}</small>
-          <br />
-          <small>Scheduled: {job.scheduled_at
-            ? new Date(job.scheduled_at).toLocaleString()
-            : 'Not set'}
-          </small>
+        {jobs.map(job => (
+          <div key={job.request_id} style={styles.card}>
+            <div style={styles.header}>
+              <strong>{job.service_name}</strong>
 
-          {/* only show buttons if job is not done or cancelled */}
-          {!['completed', 'cancelled'].includes(job.status) && (
-            <div style={styles.actions}>
-              <textarea
-                placeholder="Add a note (optional)"
-                value={notes[job.request_id] || ''}
-                onChange={(e) => handleNoteChange(job.request_id, e.target.value)}
-                rows={2}
-                style={styles.textarea}
-              />
-
-              <div style={styles.buttons}>
-                {job.status === 'assigned' && (
-                  <button
-                    style={styles.btnStart}
-                    onClick={() => handleProgress(job.request_id, 'in_progress')}
-                  >
-                    Start Job
-                  </button>
-                )}
-
-                {job.status === 'in_progress' && (
-                  <button
-                    style={styles.btnComplete}
-                    onClick={() => handleProgress(job.request_id, 'completed')}
-                  >
-                    Mark Completed
-                  </button>
-                )}
-              </div>
+              <span
+                style={{
+                  ...styles.badge,
+                  backgroundColor: statusColors[job.status] || '#ccc'
+                }}
+              >
+                {job.status}
+              </span>
             </div>
-          )}
 
-          {['completed', 'cancelled'].includes(job.status) && (
-            <p style={styles.doneLabel}>
-              {job.status === 'completed' ? '✓ Job completed' : '✗ Cancelled'}
-            </p>
-          )}
+            <p>{job.address}</p>
+            <p>{job.description}</p>
 
-        </div>
-      ))}
-    </div>
+            <small>Customer: {job.customer_name}</small>
+            <br />
+
+            <small>
+              Scheduled:{' '}
+              {job.scheduled_at
+                ? new Date(job.scheduled_at).toLocaleString()
+                : 'Not set'}
+            </small>
+
+            {!['completed', 'cancelled'].includes(job.status) && (
+              <div style={styles.actions}>
+                <textarea
+                  placeholder="Add a note (optional)"
+                  value={notes[job.request_id] || ''}
+                  onChange={(e) =>
+                    handleNoteChange(job.request_id, e.target.value)
+                  }
+                  rows={2}
+                  style={styles.textarea}
+                />
+
+                <div style={styles.buttons}>
+                  {job.status === 'assigned' && (
+                    <button
+                      style={styles.btnStart}
+                      onClick={() =>
+                        handleProgress(job.request_id, 'in_progress')
+                      }
+                    >
+                      Start Job
+                    </button>
+                  )}
+
+                  {job.status === 'in_progress' && (
+                    <button
+                      style={styles.btnComplete}
+                      onClick={() =>
+                        handleProgress(job.request_id, 'completed')
+                      }
+                    >
+                      Mark Completed
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {['completed', 'cancelled'].includes(job.status) && (
+              <p style={styles.doneLabel}>
+                {job.status === 'completed' ? '✓ Job completed' : '✗ Cancelled'}
+              </p>
+            )}
+          </div>
+        ))}
+      </div>
+    </PageWrapper>
   );
 }
 

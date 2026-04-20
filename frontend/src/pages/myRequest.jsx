@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { getRequests } from '../services/api';
 import { useAuth } from '../context/authContext';
+import Spinner from '../components/spinner';
+import PageWrapper from '../components/pageWrapper';
 
 const statusColors = {
   new: '#89b4fa',
@@ -12,33 +14,67 @@ const statusColors = {
 
 export default function MyRequests() {
   const { user } = useAuth();
+
   const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchRequests = async () => {
+    try {
+      setLoading(true);
+
+      const res = await getRequests('customer', user.profile_id);
+      setRequests(res.data);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    getRequests('customer', user.profile_id)
-      .then(res => setRequests(res.data));
+    fetchRequests();
   }, []);
 
+  if (loading) {
+    return (
+      <PageWrapper>
+        <Spinner />
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div>
-      <h2>My Requests</h2>
-      {requests.length === 0 && <p>No requests yet.</p>}
-      {requests.map(r => (
-        <div key={r.request_id} style={styles.card}>
-          <strong>{r.service_name}</strong>
-          <span style={{
-            ...styles.badge,
-            backgroundColor: statusColors[r.status] || '#ccc'
-          }}>
-            {r.status}
-          </span>
-          <p>{r.address}</p>
-          <p>{r.description}</p>
-          {r.assigned_master_name && <p>Master: {r.assigned_master_name}</p>}
-          <small>{new Date(r.created_at).toLocaleString()}</small>
-        </div>
-      ))}
-    </div>
+    <PageWrapper title="My Requests">
+      <div>
+        <h2>My Requests</h2>
+
+        {requests.length === 0 && <p>No requests yet.</p>}
+
+        {requests.map(r => (
+          <div key={r.request_id} style={styles.card}>
+            <strong>{r.service_name}</strong>
+
+            <span
+              style={{
+                ...styles.badge,
+                backgroundColor: statusColors[r.status] || '#ccc'
+              }}
+            >
+              {r.status}
+            </span>
+
+            <p>{r.address}</p>
+            <p>{r.description}</p>
+
+            {r.assigned_master_name && (
+              <p>Master: {r.assigned_master_name}</p>
+            )}
+
+            <small>
+              {new Date(r.created_at).toLocaleString()}
+            </small>
+          </div>
+        ))}
+      </div>
+    </PageWrapper>
   );
 }
 

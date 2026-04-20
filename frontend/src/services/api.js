@@ -25,3 +25,9 @@ export const getHistory = (params) =>
   API.get('/requests/history/', { params });
 export const getStats = () => API.get('/stats/');
 export const getReports = (params) => API.get('/reports/', { params });
+export const getNotifications = (userId) =>
+  API.get(`/notifications/?user_id=${userId}`);
+export const markRead = (notificationId) =>
+  API.patch(`/notifications/read/${notificationId}/`);
+export const markAllRead = (userId) =>
+  API.patch('/notifications/read-all/', { user_id: userId });

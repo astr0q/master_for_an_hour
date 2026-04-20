@@ -1,23 +1,42 @@
 import { useEffect, useState } from 'react';
-import { getRequests, updateStatus, getMasters, assignMaster } from '../services/api';
+import {
+  getRequests,
+  updateStatus,
+  getMasters,
+  assignMaster
+} from '../services/api';
 import { useAuth } from '../context/authContext';
+import Spinner from '../components/spinner';
+import PageWrapper from '../components/pageWrapper';
 
 const STATUS_OPTIONS = ['new', 'assigned', 'in_progress', 'completed', 'cancelled'];
 
 export default function AllRequests() {
   const { user } = useAuth();
+
   const [requests, setRequests] = useState([]);
   const [masters, setMasters] = useState([]);
   const [selectedMasters, setSelectedMasters] = useState({});
+  const [loading, setLoading] = useState(true);
 
-  const fetchRequests = () => {
-    getRequests('operator', user.profile_id)
-      .then(res => setRequests(res.data));
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+
+      const [reqRes, mastersRes] = await Promise.all([
+        getRequests('operator', user.profile_id),
+        getMasters()
+      ]);
+
+      setRequests(reqRes.data);
+      setMasters(mastersRes.data);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    fetchRequests();
-    getMasters().then(res => setMasters(res.data));
+    fetchData();
   }, []);
 
   const handleStatusChange = async (requestId, newStatus) => {
@@ -26,74 +45,94 @@ export default function AllRequests() {
       updated_by: user.profile_id,
       note: `Status changed to ${newStatus}`
     });
-    fetchRequests();
+
+    fetchData();
   };
 
   const handleAssign = async (requestId, masterId) => {
     if (!masterId) return;
+
     await assignMaster(requestId, {
       master_id: masterId,
       updated_by: user.profile_id
     });
-    fetchRequests();
+
+    fetchData();
   };
 
+  if (loading) {
+    return (
+      <PageWrapper>
+        <Spinner />
+      </PageWrapper>
+    );
+  }
+
   return (
-    <div>
-      <h2>All Requests</h2>
-      {requests.map(r => (
-        <div key={r.request_id} style={styles.card}>
-          <strong>{r.service_name}</strong> — {r.customer_name}
-          <p>{r.address}</p>
-          <p>{r.description}</p>
+    <PageWrapper title="My Requests">
+      <div>
+        <h2>All Requests</h2>
 
-          <div style={styles.row}>
-            <label>Status:</label>
-            <select
-              value={r.status}
-              onChange={(e) => handleStatusChange(r.request_id, e.target.value)}
-            >
-              {STATUS_OPTIONS.map(s => (
-                <option key={s} value={s}>{s}</option>
-              ))}
-            </select>
-          </div>
+        {requests.map(r => (
+          <div key={r.request_id} style={styles.card}>
+            <strong>{r.service_name}</strong> — {r.customer_name}
+            <p>{r.address}</p>
+            <p>{r.description}</p>
 
-          <div style={styles.row}>
+            <div style={styles.row}>
+              <label>Status:</label>
+              <select
+                value={r.status}
+                onChange={(e) => handleStatusChange(r.request_id, e.target.value)}
+              >
+                {STATUS_OPTIONS.map(s => (
+                  <option key={s} value={s}>{s}</option>
+                ))}
+              </select>
+            </div>
+
+            <div style={styles.row}>
               <label>Assign master:</label>
+
               <select
                 value={selectedMasters[r.request_id] ?? r.assigned_master_id ?? ''}
                 onChange={(e) =>
-                  setSelectedMasters({ ...selectedMasters, [r.request_id]: e.target.value })
+                  setSelectedMasters({
+                    ...selectedMasters,
+                    [r.request_id]: e.target.value
+                  })
                 }
-            >
-              <option value="">-- select master --</option>
-              {masters.map(m => (
-                <option key={m.profile_id} value={m.profile_id}>
-                  {m.first_name} {m.last_name}
-                </option>
-            ))}
-          </select>
+              >
+                <option value="">-- select master --</option>
+                {masters.map(m => (
+                  <option key={m.profile_id} value={m.profile_id}>
+                    {m.first_name} {m.last_name}
+                  </option>
+                ))}
+              </select>
 
-          <button
-              onClick={() => handleAssign(r.request_id, selectedMasters[r.request_id])}
-              disabled={!selectedMasters[r.request_id]}
-              style={styles.assignBtn}
-          >
-            Confirm
-          </button>
-        </div>
+              <button
+                onClick={() =>
+                  handleAssign(r.request_id, selectedMasters[r.request_id])
+                }
+                disabled={!selectedMasters[r.request_id]}
+                style={styles.assignBtn}
+              >
+                Confirm
+              </button>
+            </div>
 
-          {r.assigned_master_name && (
-            <p style={{ color: '#888', fontSize: '13px' }}>
-              Currently assigned: {r.assigned_master_name}
-          </p>
-        )}
+            {r.assigned_master_name && (
+              <p style={{ color: '#888', fontSize: '13px' }}>
+                Currently assigned: {r.assigned_master_name}
+              </p>
+            )}
 
-          <small>{new Date(r.created_at).toLocaleString()}</small>
-        </div>
-      ))}
-    </div>
+            <small>{new Date(r.created_at).toLocaleString()}</small>
+          </div>
+        ))}
+      </div>
+    </PageWrapper>
   );
 }
 

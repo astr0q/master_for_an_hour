@@ -1,75 +1,196 @@
-# master_for_an_hour
-This will be my university individual project - Master for an Hour – Call Control System for Minor Repairs,
-________________________________________
-# Users Definition:
-The application will serve the following types of users:
-Customer:
-  Responsibilities:
-  Create repair service requests.
-  Select the type of repair (e.g., plumbing, electrical work, painting, furniture assembly, etc.).
-  Provide details such as address and preferred service date/time.
-  Track the status of their repair requests.
-  View history of completed repairs.
-___________________
-Operator (Dispatcher):
-Responsibilities:
-  Review incoming repair requests.
-  Assign masters to specific tasks based on availability and skill.
-  Update request statuses (e.g., New, Assigned, In Progress, Completed, Cancelled).
-  Manage the list of available masters, including their status and performance.
-___________________
-Master (Worker):
-Responsibilities:
-  View and manage assigned repair tasks.
-  Update task progress (mark as in-progress, completed, etc.).
-  Add notes related to completed tasks (e.g., issues encountered, recommendations).
-  Ensure communication with both customers and operators as needed.
-________________________________________
-# Functionality Definition:
-  The application will support the following core features:
-  User Registration and Authentication:
-  Allow customers, operators, and masters to register with the system and log in securely.
-___________________
-Repair Request Management:
-  Enable customers to create new repair requests by specifying type, description, address, and preferred date/time.
-  Allow customers to modify or cancel requests before assignment.
-___________________
-Request Assignment and Status Updates:
-  Operators can assign repair tasks to available masters based on expertise and availability.
-  Operators and masters can update the status of requests (e.g., New, Assigned, In Progress, Completed).
-  Customers will be notified of any changes in request status.
-___________________
-Repair History:
-  Customers and operators can view a history of completed repairs, including details like service type, date, and task completion status.
-___________________
-Data Storage and Management:
-  Store repair requests and task data in a Supabase database for persistence and scalability.
-  Provide an option to save and load data for requests, including users and task progress.
-___________________
-Input Validation and Error Handling:
-  Ensure all user inputs (address, date/time, repair description) are validated and error-free.
-  Display clear error messages to guide users in case of incorrect or missing information.
-___________________
-Basic Statistics and Reports:
-  Provide operators with statistics such as the number of completed jobs, active requests, and task performance metrics.
-________________________________________
-# Platform:
-Web Application designed for seamless access from desktop and mobile devices in the future.
-Frontend: Django (with Python and JavaScript)
-Backend: Django (Python) with Supabase for real-time database handling.
-________________________________________
-# Programming Languages and Tools:
-Primary Language: Python
-Framework: Django for backend management
-Database: Supabase (for data storage and user authentication)
-Frontend: Django templates for user interface
-Development Paradigm: Object-Oriented Programming (OOP)
+# Master for an Hour — Call Control System for Minor Repairs
 
--- starts backend
+A university individual project. A web-based repair request management system that connects customers, operators, and masters (workers) through a structured workflow.
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | React (Vite) |
+| Backend | Django + Django REST Framework |
+| Database | Supabase (PostgreSQL) |
+| Auth | Custom (email + password, role-based) |
+| Styling | Inline React styles + global CSS |
+
+---
+
+## User Roles
+
+**Customer**
+- Create repair service requests (service type, address, date/time)
+- Track the status of their requests in real time
+- View history of completed and cancelled repairs
+- Receive notifications when request status changes
+
+**Operator (Dispatcher)**
+- View all incoming repair requests
+- Assign masters to requests based on availability
+- Update and manage request statuses
+- View statistics and generate reports
+- Access full repair history with filters
+
+**Master (Worker)**
+- View assigned repair jobs
+- Mark jobs as in progress and completed
+- Add notes to completed tasks
+- Set and update personal availability
+
+---
+
+## Features
+
+- User registration and login with role-based access control
+- Repair request creation with service selection, address, and scheduling
+- Request lifecycle management: `new → assigned → in_progress → completed / cancelled`
+- Master assignment by operator with confirmation
+- Task progress updates by master with optional notes
+- Full repair history with filters (date range, service, status)
+- Statistics dashboard (totals, by service, by status)
+- Report generator with filters and summary
+- In-app notification system with unread badge and mark as read
+- Input validation on both frontend and backend
+- Protected routes — each role only sees their own pages
+
+---
+
+## Project Structure
+
+```
+master-for-an-hour/
+├── backend/                  # Django project
+│   ├── manage.py
+│   ├── .env                  # DB credentials (not committed)
+│   ├── requirements.txt
+│   ├── config/
+│   │   ├── settings.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
+│   └── core/                 # Main app
+│       ├── models.py
+│       ├── views.py
+│       ├── urls.py
+│       ├── serializers.py
+│       └── validators.py
+└── frontend/                 # React (Vite) project
+    └── src/
+        ├── pages/
+        ├── components/
+        ├── services/
+        ├── context/
+        └── utils/
+```
+
+---
+
+## Database Schema (Supabase / PostgreSQL)
+
+| Table | Description |
+|---|---|
+| `profiles` | All users (customer, operator, master) |
+| `services` | Available repair service types |
+| `repair_requests` | Core repair request records |
+| `request_updates` | Status change history and notes |
+| `master_availability` | Master availability status |
+| `notifications` | In-app notifications per user |
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- A Supabase project with the schema already created
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/your-username/master-for-an-hour.git
+cd master-for-an-hour
+```
+
+### 2. Backend setup
+
+```bash
 cd backend
-venv\Scripts\activate
-python manage.py runserver
+python -m venv venv
+venv\Scripts\activate        # Windows
+# source venv/bin/activate   # Mac/Linux
+pip install -r requirements.txt
+```
 
--- start frontend
+Create a `.env` file inside `backend/`:
+
+```
+DB_HOST=your-supabase-pooler-host
+DB_PORT=6543
+DB_NAME=postgres
+DB_USER=postgres.your-project-ref
+DB_PASSWORD=your-supabase-password
+```
+
+Start the backend:
+
+```bash
+python manage.py runserver
+```
+
+Backend runs at: `http://localhost:8000`
+
+### 3. Frontend setup
+
+```bash
 cd frontend
+npm install
 npm run dev
+```
+
+Frontend runs at: `http://localhost:5173`
+
+---
+
+## API Endpoints
+
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/register/` | Register a new user |
+| POST | `/api/login/` | Login and get user data |
+| GET | `/api/services/` | List all services |
+| POST | `/api/requests/create/` | Customer creates a request |
+| GET | `/api/requests/` | Get requests (role-filtered) |
+| GET | `/api/requests/history/` | Get completed/cancelled requests |
+| GET | `/api/requests/master/<id>/` | Get master's assigned jobs |
+| PATCH | `/api/requests/<id>/status/` | Update request status |
+| PATCH | `/api/requests/<id>/assign/` | Assign master to request |
+| PATCH | `/api/requests/<id>/progress/` | Master updates job progress |
+| GET | `/api/masters/` | List all masters |
+| GET | `/api/availability/` | Get master availability |
+| POST | `/api/availability/update/` | Update master availability |
+| GET | `/api/stats/` | Get statistics |
+| GET | `/api/reports/` | Get filtered report data |
+| GET | `/api/notifications/` | Get user notifications |
+| PATCH | `/api/notifications/read/<id>/` | Mark notification as read |
+| PATCH | `/api/notifications/read-all/` | Mark all notifications as read |
+
+---
+
+## Test Accounts (Seeded Data)
+
+| Role | Email | Password |
+|---|---|---|
+| Customer | customer@test.com | 1234 |
+| Operator | operator@test.com | 1234 |
+| Master | master@test.com | 1234 |
+
+> Note: seed these manually in Supabase or via the register form before testing.
+
+---
+
+## Notes
+
+- `.env` is excluded from version control
+- Passwords are stored as plain text
+- No third-party auth — authentication is handled manually via the `profiles` table
