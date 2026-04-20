@@ -85,7 +85,7 @@ export default function History() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>Repair History</h2>
 
@@ -177,3 +177,58 @@ export default function History() {
     </PageWrapper>
   );
 }
+
+const styles = {
+  filterBar: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '10px',
+    marginBottom: '20px',
+    alignItems: 'center',
+  },
+  btnApply: {
+    backgroundColor: '#89b4fa',
+    border: 'none',
+    padding: '6px 16px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontWeight: 'bold',
+  },
+  btnClear: {
+    backgroundColor: '#ccc',
+    border: 'none',
+    padding: '6px 16px',
+    borderRadius: '6px',
+    cursor: 'pointer',
+  },
+  card: {
+    border: '1px solid #ccc',
+    borderRadius: '8px',
+    padding: '16px',
+    marginBottom: '12px',
+  },
+  header: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '10px',
+    marginBottom: '8px',
+  },
+  badge: {
+    padding: '2px 10px',
+    borderRadius: '12px',
+    fontSize: '12px',
+    fontWeight: 'bold',
+  },
+  desc: {
+    color: '#666',
+    fontSize: '14px',
+  },
+  meta: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '16px',
+    marginTop: '10px',
+    fontSize: '13px',
+    color: '#888',
+  }
+};

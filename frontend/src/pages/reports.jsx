@@ -87,7 +87,7 @@ export default function Reports() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>Reports</h2>
 

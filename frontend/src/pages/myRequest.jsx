@@ -42,7 +42,7 @@ export default function MyRequests() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>My Requests</h2>
 

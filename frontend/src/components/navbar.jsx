@@ -2,6 +2,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import NotificationBell from './notificationBell';
 
+const roleColors = {
+  customer: '#89b4fa',
+  operator: '#cba6f7',
+  master: '#a6e3a1',
+};
+
 export default function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
@@ -23,14 +29,6 @@ export default function Navbar() {
           </>
         )}
 
-        {user && (
-          <>
-            <NotificationBell />
-            <span style={styles.userInfo}>👤 {user.first_name} {user.last_name}</span>
-            <button onClick={handleLogout} style={styles.logout}>Logout</button>
-          </>
-        )}
-
         {user?.role === 'customer' && (
           <>
             <Link to="/new-request" style={styles.link}>New Request</Link>
@@ -41,12 +39,12 @@ export default function Navbar() {
 
         {user?.role === 'operator' && (
           <>
-          <Link to="/all-requests" style={styles.link}>All Requests</Link>
-          <Link to="/assign" style={styles.link}>Assign Masters</Link>
-          <Link to="/history" style={styles.link}>History</Link>
-          <Link to="/stats" style={styles.link}>Stats</Link>
-          <Link to="/reports" style={styles.link}>Reports</Link>
-        </>
+            <Link to="/all-requests" style={styles.link}>All Requests</Link>
+            <Link to="/assign" style={styles.link}>Assign Masters</Link>
+            <Link to="/history" style={styles.link}>History</Link>
+            <Link to="/stats" style={styles.link}>Stats</Link>
+            <Link to="/reports" style={styles.link}>Reports</Link>
+          </>
         )}
 
         {user?.role === 'master' && (
@@ -57,10 +55,25 @@ export default function Navbar() {
         )}
 
         {user && (
-          <>
-            <span style={styles.userInfo}>👤 {user.first_name} {user.last_name}</span>
-            <button onClick={handleLogout} style={styles.logout}>Logout</button>
-          </>
+          <div style={styles.userArea}>
+            <NotificationBell />
+
+            <span style={styles.userInfo}>
+              👤 {user.first_name} {user.last_name}
+              <span
+                style={{
+                  ...styles.roleBadge,
+                  backgroundColor: roleColors[user.role] || '#ccc'
+                }}
+              >
+                {user.role}
+              </span>
+            </span>
+
+            <button onClick={handleLogout} style={styles.logout}>
+              Logout
+            </button>
+          </div>
         )}
       </div>
     </nav>
@@ -91,9 +104,18 @@ const styles = {
     textDecoration: 'none',
     fontSize: '14px',
   },
+  userArea: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    marginLeft: '12px',
+  },
   userInfo: {
     fontSize: '14px',
     color: '#a6e3a1',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px',
   },
   logout: {
     backgroundColor: '#f38ba8',
@@ -104,4 +126,11 @@ const styles = {
     cursor: 'pointer',
     fontSize: '14px',
   },
+  roleBadge: {
+    padding: '2px 8px',
+    borderRadius: '10px',
+    fontSize: '11px',
+    fontWeight: 'bold',
+    color: '#111',
+  }
 };

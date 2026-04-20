@@ -71,7 +71,7 @@ export default function Register() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div style={styles.card}>
         <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>
           Create account

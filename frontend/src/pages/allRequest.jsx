@@ -69,7 +69,7 @@ export default function AllRequests() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>All Requests</h2>
 

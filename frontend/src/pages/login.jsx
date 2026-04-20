@@ -54,7 +54,7 @@ export default function Login() {
   };
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div style={styles.card}>
         <h2 style={{ textAlign: 'center', marginBottom: '24px' }}>
           Welcome back

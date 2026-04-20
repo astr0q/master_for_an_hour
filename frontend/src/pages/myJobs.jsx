@@ -63,7 +63,7 @@ export default function MyJobs() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>My Jobs</h2>
 

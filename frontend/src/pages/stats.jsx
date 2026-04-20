@@ -31,7 +31,7 @@ export default function Stats() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div>
         <h2>Statistics</h2>
 

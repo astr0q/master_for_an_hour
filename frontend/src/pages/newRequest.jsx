@@ -79,7 +79,7 @@ export default function NewRequest() {
   }
 
   return (
-    <PageWrapper title="My Requests">
+    <PageWrapper>
       <div style={styles.card}>
         <h2 style={{ marginBottom: '20px' }}>New Repair Request</h2>
 
