@@ -5,11 +5,12 @@
 }
 
 body {
-  font-family: 'Segoe UI', sans-serif;
-  background-color: #f4f4f8;
-  color: #1e1e2e;
-  font-size: 15px;
-  line-height: 1.6;
+  background-image: url('./assets/back_pic.png');
+  background-attachment: fixed;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-color: #f4f4f8; /* fallback during load */
 }
 
 h2 {
