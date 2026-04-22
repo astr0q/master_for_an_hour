@@ -2,7 +2,13 @@
 
 A university individual project. A web-based repair request management system that connects customers, operators, and masters (workers) through a structured workflow.
 
+<<<<<<< HEAD
 
+=======
+## Live Demo
+
+**Visit the deployed application:** [http://master-for-an-hour.vercel.app/](http://master-for-an-hour.vercel.app/)
+>>>>>>> eef1b3fc948b0bde62a2cff9c9e37bfe444f504f
 ---
 
 ## Tech Stack
