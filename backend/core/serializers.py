@@ -4,6 +4,7 @@ from .models import Profiles, RepairRequests, Services, MasterAvailability, Noti
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    phone = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = Profiles
@@ -14,6 +15,18 @@ class RegisterSerializer(serializers.ModelSerializer):
         if value not in ['customer', 'operator', 'master']:
             raise serializers.ValidationError("Invalid role")
         return value
+
+    def create(self, validated_data):
+        phone = validated_data.pop('phone', None)
+        if phone == '' or phone is None:
+            validated_data['phone'] = None
+        else:
+            try:
+                validated_data['phone'] = int(phone)
+            except (ValueError, OverflowError):
+                validated_data['phone'] = None
+
+        return super().create(validated_data)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
@@ -68,7 +81,9 @@ class AvailabilitySerializer(serializers.ModelSerializer):
         fields = ['availability_id', 'master_id', 'master_name',
                   'is_available', 'notes', 'updated_at']
 
+
 class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notifications
-        fields = ['notification_id', 'user_id', 'message', 'is_read', 'created_at']
+        fields = ['notification_id', 'user_id',
+                  'message', 'is_read', 'created_at']

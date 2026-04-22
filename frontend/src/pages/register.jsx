@@ -130,7 +130,7 @@ export default function Register() {
           <label style={styles.label}>Phone (optional)</label>
           <input
             name="phone"
-            placeholder="+371 ..."
+            placeholder=" 288711722"
             onChange={handleChange}
             value={form.phone}
             disabled={loading}
