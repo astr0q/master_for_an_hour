@@ -7,18 +7,22 @@ A university individual project. A web-based repair request management system th
 
 **Visit the deployed application:** [http://master-for-an-hour.vercel.app/](http://master-for-an-hour.vercel.app/)
 
-**CURRENT LIMITATIONS** 
-When registering a new account via a desktop browser, a permission pop up will appear after clicking the Register button.
-Action Required: You must select Allow for the registration to complete successfully.
-Outcome of Denial: If permissions are denied, the registration process will fail, and the account will not be created.
+Current Limitations
 
-Mobile Access
-Currently, registration is not supported on mobile devices.
-Users attempting to sign up via a smartphone will receive a "Registration failed" error message.
+#### Desktop Registration & Permissions
+When registering a new account via a desktop browser, a permission pop-up will appear after clicking the **Register** button.
 
-Technical Root Cause & Future Fix
-These limitations stem from known backend connectivity issues between Django and Vercel's serverless infrastructure.
-To resolve these stability issues, i recommend migrating the backend deployment from Vercel to a dedicated hosting provider (AWS, DigitalOcean, or Railway e.c) that offers persistent connections.
+* **Action Required:** You must select **Allow** for the registration to complete successfully.
+* **Outcome of Denial:** If permissions are denied, the registration process will fail, and the account will not be created.
+
+#### Mobile Access
+Currently, registration is **not supported** on mobile devices.
+* Users attempting to sign up via a smartphone will receive a "Registration failed" error message.
+
+#### Technical Root Cause & Future Fix
+These limitations stem from known backend connectivity issues between **Django** and **Vercel's** serverless infrastructure.
+
+To resolve these stability issues, it is recommended to migrate the backend deployment from Vercel to a dedicated hosting provider (e.g., **AWS**, **DigitalOcean**, or **Railway**) that supports persistent connections.
 ---
 
 ## Tech Stack
