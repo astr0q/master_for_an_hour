@@ -12,6 +12,7 @@ import Availability from './pages/availability';
 import History from './pages/history';
 import Stats from './pages/stats';
 import Reports from './pages/reports';
+import Chatbot from './components/chatbot';
 
 function Assign() { return <h2>Assign Masters</h2>; }
 export default function App() {
@@ -58,6 +59,7 @@ export default function App() {
           </Routes>
         </div>
       </BrowserRouter>
+      <Chatbot />
     </AuthProvider>
   );
 }
