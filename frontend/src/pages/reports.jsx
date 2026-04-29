@@ -78,6 +78,30 @@ export default function Reports() {
     setSearched(false);
   };
 
+  const handleExportCSV = () => {
+  if (records.length === 0) return;
+
+  const headers = ['ID', 'Service', 'Customer', 'Master', 'Address', 'Status', 'Created'];
+  const rows = records.map(r => [
+    r.request_id,
+    r.service_name,
+    r.customer_name,
+    r.assigned_master_name || 'Unassigned',
+    `"${r.address}"`,
+    r.status,
+    new Date(r.created_at).toLocaleDateString(),
+  ]);
+
+  const csv = [headers, ...rows].map(row => row.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `report_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  };
+
   if (loading) {
     return (
       <PageWrapper>
@@ -89,7 +113,7 @@ export default function Reports() {
   return (
     <PageWrapper>
       <div>
-        <h2>Reports</h2>
+        <h2 style={{color:'#888'}}>Reports</h2>
 
         {/* filter bar */}
         <div style={styles.filterBar}>
@@ -142,6 +166,12 @@ export default function Reports() {
           >
             {generating ? 'Generating...' : 'Generate'}
           </button>
+
+          {records.length > 0 && (
+            <button onClick={handleExportCSV} style={styles.btnExport}>
+              Export CSV
+            </button>
+          )}
 
           <button onClick={handleClear} style={styles.btnClear}>
             Clear
@@ -293,5 +323,13 @@ const styles = {
     borderRadius: '10px',
     fontSize: '11px',
     fontWeight: 'bold',
-  }
+  },
+  btnExport: {
+  backgroundColor: '#a6e3a1',
+  border: 'none',
+  padding: '6px 16px',
+  borderRadius: '6px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  },
 };

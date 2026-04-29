@@ -21,4 +21,6 @@ urlpatterns = [
     path('notifications/', views.get_notifications),
     path('notifications/read-all/', views.mark_all_read),
     path('notifications/read/<int:notification_id>/', views.mark_read),
+    path('reviews/submit/', views.submit_review),
+    path('reviews/', views.get_reviews),
 ]

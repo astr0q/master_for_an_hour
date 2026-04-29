@@ -65,7 +65,7 @@ export default function MyJobs() {
   return (
     <PageWrapper>
       <div>
-        <h2>My Jobs</h2>
+        <h2 style={{color:'#888'}}>My Jobs</h2>
 
         {jobs.length === 0 && <p>No jobs assigned to you yet.</p>}
 

@@ -2,27 +2,26 @@
 
 A university individual project. A web-based repair request management system that connects customers, operators, and masters (workers) through a structured workflow.
 
-=======
+---
+
 ## Live Demo
 
 **Visit the deployed application:** [http://master-for-an-hour.vercel.app/](http://master-for-an-hour.vercel.app/)
 
-Current Limitations
+### Current Limitations
 
 #### Desktop Registration & Permissions
 When registering a new account via a desktop browser, a permission pop-up will appear after clicking the **Register** button.
 
-* **Action Required:** You must select **Allow** for the registration to complete successfully.
-* **Outcome of Denial:** If permissions are denied, the registration process will fail, and the account will not be created.
+- **Action Required:** You must select **Allow** for the registration to complete successfully.
+- **Outcome of Denial:** If permissions are denied, the registration process will fail and the account will not be created.
 
 #### Mobile Access
-Currently, registration is **not supported** on mobile devices.
-* Users attempting to sign up via a smartphone will receive a "Registration failed" error message.
+Currently, registration is **not supported** on mobile devices. Users attempting to sign up via a smartphone will receive a "Registration failed" error message.
 
 #### Technical Root Cause & Future Fix
-These limitations stem from known backend connectivity issues between **Django** and **Vercel's** serverless infrastructure.
+These limitations stem from known backend connectivity issues between **Django** and **Vercel's** serverless infrastructure. To resolve these, it is recommended to migrate the backend to a dedicated hosting provider such as **AWS**, **DigitalOcean**, or **Railway** that supports persistent connections.
 
-To resolve these stability issues, it is recommended to migrate the backend deployment from Vercel to a dedicated hosting provider (e.g., **AWS**, **DigitalOcean**, or **Railway**) that supports persistent connections.
 ---
 
 ## Tech Stack
@@ -33,6 +32,8 @@ To resolve these stability issues, it is recommended to migrate the backend depl
 | Backend | Django + Django REST Framework |
 | Database | Supabase (PostgreSQL) |
 | Auth | Custom (email + password, role-based) |
+| Charts | Recharts |
+| AI Chatbot | OpenRouter API (Mistral / Llama) |
 | Styling | Inline React styles + global CSS |
 
 ---
@@ -43,20 +44,22 @@ To resolve these stability issues, it is recommended to migrate the backend depl
 - Create repair service requests (service type, address, date/time)
 - Track the status of their requests in real time
 - View history of completed and cancelled repairs
+- Leave star ratings and comments on completed jobs
 - Receive notifications when request status changes
 
 **Operator (Dispatcher)**
 - View all incoming repair requests
-- Assign masters to requests based on availability
+- Assign masters to requests based on availability (with live availability indicator)
 - Update and manage request statuses
-- View statistics and generate reports
+- View statistics dashboard with charts
+- Generate and export reports as CSV
 - Access full repair history with filters
 
 **Master (Worker)**
 - View assigned repair jobs
 - Mark jobs as in progress and completed
 - Add notes to completed tasks
-- Set and update personal availability
+- Set and update personal availability status
 
 ---
 
@@ -65,14 +68,18 @@ To resolve these stability issues, it is recommended to migrate the backend depl
 - User registration and login with role-based access control
 - Repair request creation with service selection, address, and scheduling
 - Request lifecycle management: `new → assigned → in_progress → completed / cancelled`
-- Master assignment by operator with confirmation
+- Master assignment by operator with availability indicator (🟢 / 🔴) in dropdown
 - Task progress updates by master with optional notes
+- Customer review and star rating system for completed jobs
 - Full repair history with filters (date range, service, status)
-- Statistics dashboard (totals, by service, by status)
-- Report generator with filters and summary
+- Statistics dashboard with bar chart (by service) and pie chart (by status)
+- Report generator with filters, summary, and CSV export
 - In-app notification system with unread badge and mark as read
 - Input validation on both frontend and backend
 - Protected routes — each role only sees their own pages
+- Dark mode toggle with preference saved to localStorage
+- AI-powered support chatbot (OpenRouter) with knowledge base and quick questions
+- Footer with contact info, services list, and embedded Google Maps location
 
 ---
 
@@ -100,6 +107,7 @@ master-for-an-hour/
         ├── components/
         ├── services/
         ├── context/
+        ├── chatbot/          # AI chatbot knowledge base
         └── utils/
 ```
 
@@ -110,11 +118,12 @@ master-for-an-hour/
 | Table | Description |
 |---|---|
 | `profiles` | All users (customer, operator, master) |
-| `services` | Available repair service types |
+| `services` | Available repair service types (15 services) |
 | `repair_requests` | Core repair request records |
 | `request_updates` | Status change history and notes |
 | `master_availability` | Master availability status |
 | `notifications` | In-app notifications per user |
+| `reviews` | Customer star ratings and comments for completed jobs |
 
 ---
 
@@ -125,6 +134,7 @@ master-for-an-hour/
 - Python 3.10+
 - Node.js 18+
 - A Supabase project with the schema already created
+- An OpenRouter API key (free at https://openrouter.ai) for the chatbot
 
 ### 1. Clone the repository
 
@@ -169,7 +179,15 @@ npm install
 npm run dev
 ```
 
+Create a `.env` file inside `frontend/`:
+
+```
+VITE_OPENROUTER_API_KEY=your-openrouter-api-key-here
+```
+
 Frontend runs at: `http://localhost:5173`
+
+> Both servers must be running simultaneously for the application to work.
 
 ---
 
@@ -187,14 +205,40 @@ Frontend runs at: `http://localhost:5173`
 | PATCH | `/api/requests/<id>/status/` | Update request status |
 | PATCH | `/api/requests/<id>/assign/` | Assign master to request |
 | PATCH | `/api/requests/<id>/progress/` | Master updates job progress |
-| GET | `/api/masters/` | List all masters |
+| GET | `/api/masters/` | List all masters with availability |
 | GET | `/api/availability/` | Get master availability |
 | POST | `/api/availability/update/` | Update master availability |
-| GET | `/api/stats/` | Get statistics |
+| GET | `/api/stats/` | Get statistics and chart data |
 | GET | `/api/reports/` | Get filtered report data |
 | GET | `/api/notifications/` | Get user notifications |
 | PATCH | `/api/notifications/read/<id>/` | Mark notification as read |
 | PATCH | `/api/notifications/read-all/` | Mark all notifications as read |
+| POST | `/api/reviews/submit/` | Submit a star rating and comment |
+| GET | `/api/reviews/` | Get reviews (filterable by master) |
+
+---
+
+## Available Services
+
+The system includes 15 real-world repair and home services:
+
+| # | Service | Base Price |
+|---|---|---|
+| 1 | Plumbing | €50 |
+| 2 | Electrical Work | €70 |
+| 3 | Furniture Repair | €40 |
+| 4 | Painting & Decorating | €60 |
+| 5 | Appliance Repair | €80 |
+| 6 | Locksmith | €55 |
+| 7 | Carpentry | €65 |
+| 8 | Cleaning | €45 |
+| 9 | Tiling | €75 |
+| 10 | Boiler Service | €90 |
+| 11 | Roof Repair | €100 |
+| 12 | Window Repair | €60 |
+| 13 | Floor Installation | €85 |
+| 14 | Garden & Landscaping | €50 |
+| 15 | Pest Control | €70 |
 
 ---
 
@@ -206,12 +250,14 @@ Frontend runs at: `http://localhost:5173`
 | Operator | operator@test.com | 1234 |
 | Master | master@test.com | 1234 |
 
-> Note: seed these manually in Supabase or via the register form before testing.
+> Seed these manually in Supabase or via the register form before testing.
 
 ---
 
 ## Notes
 
-- `.env` is excluded from version control
-- Passwords are stored as plain text
+- `.env` files are excluded from version control — never commit them
+- Passwords are stored as plain text (acceptable for university project scope — in production, bcrypt hashing would be used)
 - No third-party auth — authentication is handled manually via the `profiles` table
+- RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
+- The AI chatbot uses the free tier of OpenRouter and requires an internet connection

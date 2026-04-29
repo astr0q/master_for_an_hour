@@ -31,3 +31,6 @@ export const markRead = (notificationId) =>
   API.patch(`/notifications/read/${notificationId}/`);
 export const markAllRead = (userId) =>
   API.patch('/notifications/read-all/', { user_id: userId });
+export const submitReview = (data) => API.post('/reviews/submit/', data);
+export const getReviews = (masterId) =>
+  API.get(`/reviews/${masterId ? `?master_id=${masterId}` : ''}`);

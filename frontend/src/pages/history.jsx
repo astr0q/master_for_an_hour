@@ -87,7 +87,7 @@ export default function History() {
   return (
     <PageWrapper>
       <div>
-        <h2>Repair History</h2>
+        <h2 style={{color:'#888'}}>Repair History</h2>
 
         {/* filters */}
         <div style={styles.filterBar}>

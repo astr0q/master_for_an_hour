@@ -1,5 +1,5 @@
 from rest_framework import serializers  # type: ignore[import]
-from .models import Profiles, RepairRequests, Services, MasterAvailability, Notifications
+from .models import Profiles, RepairRequests, Services, MasterAvailability, Notifications, Reviews
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -87,3 +87,9 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notifications
         fields = ['notification_id', 'user_id',
                   'message', 'is_read', 'created_at']
+        
+
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reviews
+        fields = ['review_id', 'request_id', 'customer_id', 'master_id', 'rating', 'comment', 'created_at']

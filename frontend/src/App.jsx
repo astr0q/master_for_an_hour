@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './context/authContext';
+import { AuthProvider, useAuth } from './context/authContext';
 import Navbar from './components/navbar';
 import ProtectedRoute from './components/protectedRoute';
 import Login from './pages/login';
@@ -13,53 +13,71 @@ import History from './pages/history';
 import Stats from './pages/stats';
 import Reports from './pages/reports';
 import Chatbot from './components/chatbot';
+import Footer from './components/footer';
 
 function Assign() { return <h2>Assign Masters</h2>; }
+
+function AppLayout() {
+  const { darkMode } = useAuth();
+
+  return (
+    <div style={{
+      minHeight: '100vh',
+      backgroundColor: darkMode ? '#11111b' : '#f5f4fa',
+      color: darkMode ? '#f5f4fa' : '#181825',
+      transition: 'background-color 0.3s, color 0.3s',
+    }}>
+      <Navbar />
+      <div style={{ padding: '24px' }}>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+
+          <Route path="/new-request" element={
+            <ProtectedRoute roles={['customer']}><NewRequest /></ProtectedRoute>
+          }/>
+          <Route path="/my-requests" element={
+            <ProtectedRoute roles={['customer']}><MyRequests /></ProtectedRoute>
+          }/>
+
+          <Route path="/all-requests" element={
+            <ProtectedRoute roles={['operator']}><AllRequests /></ProtectedRoute>
+          }/>
+          <Route path="/assign" element={
+            <ProtectedRoute roles={['operator']}><Assign /></ProtectedRoute>
+          }/>
+
+          <Route path="/my-jobs" element={
+            <ProtectedRoute roles={['master']}><MyJobs /></ProtectedRoute>
+          }/>
+          <Route path="/availability" element={
+            <ProtectedRoute roles={['master']}><Availability /></ProtectedRoute>
+          }/>
+          <Route path="/history" element={
+          <ProtectedRoute roles={['customer', 'operator']}><History /></ProtectedRoute>
+          }/>
+          <Route path="/stats" element={
+          <ProtectedRoute roles={['operator']}><Stats /></ProtectedRoute>
+          }/>
+          <Route path="/reports" element={
+          <ProtectedRoute roles={['operator']}><Reports /></ProtectedRoute>
+          }/>
+
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </div>
+      <Chatbot />
+      <Footer />
+    </div>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        <Navbar />
-        <div style={{ padding: '24px' }}>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-
-            <Route path="/new-request" element={
-              <ProtectedRoute roles={['customer']}><NewRequest /></ProtectedRoute>
-            }/>
-            <Route path="/my-requests" element={
-              <ProtectedRoute roles={['customer']}><MyRequests /></ProtectedRoute>
-            }/>
-
-            <Route path="/all-requests" element={
-              <ProtectedRoute roles={['operator']}><AllRequests /></ProtectedRoute>
-            }/>
-            <Route path="/assign" element={
-              <ProtectedRoute roles={['operator']}><Assign /></ProtectedRoute>
-            }/>
-
-            <Route path="/my-jobs" element={
-              <ProtectedRoute roles={['master']}><MyJobs /></ProtectedRoute>
-            }/>
-            <Route path="/availability" element={
-              <ProtectedRoute roles={['master']}><Availability /></ProtectedRoute>
-            }/>
-            <Route path="/history" element={
-            <ProtectedRoute roles={['customer', 'operator']}><History /></ProtectedRoute>
-            }/>
-            <Route path="/stats" element={
-            <ProtectedRoute roles={['operator']}><Stats /></ProtectedRoute>
-            }/>
-            <Route path="/reports" element={
-            <ProtectedRoute roles={['operator']}><Reports /></ProtectedRoute>
-            }/>
-
-            <Route path="*" element={<Navigate to="/login" />} />
-          </Routes>
-        </div>
+        <AppLayout />
       </BrowserRouter>
-      <Chatbot />
     </AuthProvider>
   );
 }

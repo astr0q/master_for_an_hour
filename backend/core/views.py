@@ -1,11 +1,11 @@
 from rest_framework.decorators import api_view  # type: ignore[import]
 from rest_framework.response import Response  # type: ignore[import]
-from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability, Notifications
+from .models import Profiles, RepairRequests, Services, RequestUpdates, MasterAvailability, Notifications, Reviews
 from .serializers import (
     RegisterSerializer, ProfileSerializer,
     RepairRequestSerializer, ServiceSerializer,
     MasterSerializer, AvailabilitySerializer,
-    NotificationSerializer
+    NotificationSerializer, ReviewSerializer
 )
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
@@ -62,6 +62,7 @@ def get_services(request):
     services = Services.objects.all()
     serializer = ServiceSerializer(services, many=True)
     return Response(serializer.data)
+
 
 def create_notification(user_id, message):
     try:
@@ -162,7 +163,7 @@ def update_status(request, request_id):
     create_notification(
         repair_request.customer_id,
         f'Your repair request ({repair_request.service.name}) status changed to {new_status}'
-)
+    )
 
     try:
         updated_by = Profiles.objects.get(profile_id=updated_by_id)
@@ -212,7 +213,7 @@ def assign_master(request, request_id):
     create_notification(
         master_id,
         f'You have been assigned a new job: {repair_request.service.name} at {repair_request.address}'
-)
+    )
 
     try:
         updated_by = Profiles.objects.get(profile_id=updated_by_id)
@@ -261,7 +262,7 @@ def update_progress(request, request_id):
     create_notification(
         repair_request.customer_id,
         f'Your repair request ({repair_request.service.name}) is now {new_status}'
-)
+    )
 
     try:
         master = Profiles.objects.get(profile_id=master_id)
@@ -281,8 +282,17 @@ def update_progress(request, request_id):
 @api_view(['GET'])
 def get_masters(request):
     masters = Profiles.objects.filter(role='master')
-    serializer = MasterSerializer(masters, many=True)
-    return Response(serializer.data)
+    result = []
+    for master in masters:
+        availability = MasterAvailability.objects.filter(master=master).first()
+        result.append({
+            'profile_id': master.profile_id,
+            'first_name': master.first_name,
+            'last_name': master.last_name,
+            'email': master.email,
+            'is_available': availability.is_available if availability else None,
+        })
+    return Response(result)
 
 
 @api_view(['GET'])
@@ -452,6 +462,7 @@ def get_reports(request):
         'records': serializer.data,
     })
 
+
 @api_view(['GET'])
 def get_notifications(request):
     user_id = request.query_params.get('user_id')
@@ -465,7 +476,8 @@ def get_notifications(request):
 @api_view(['PATCH'])
 def mark_read(request, notification_id):
     try:
-        notification = Notifications.objects.get(notification_id=notification_id)
+        notification = Notifications.objects.get(
+            notification_id=notification_id)
         notification.is_read = True
         notification.save()
         return Response({'message': 'Marked as read'})
@@ -476,5 +488,51 @@ def mark_read(request, notification_id):
 @api_view(['PATCH'])
 def mark_all_read(request):
     user_id = request.data.get('user_id')
-    Notifications.objects.filter(user_id=user_id, is_read=False).update(is_read=True)
+    Notifications.objects.filter(
+        user_id=user_id, is_read=False).update(is_read=True)
     return Response({'message': 'All marked as read'})
+
+
+@api_view(['POST'])
+def submit_review(request):
+    request_id = request.data.get('request_id')
+    customer_id = request.data.get('customer_id')
+    rating = request.data.get('rating')
+
+    if not rating or not (1 <= int(rating) <= 5):
+        return Response({'error': 'Rating must be between 1 and 5'}, status=400)
+
+    if Reviews.objects.filter(request_id=request_id).exists():
+        return Response({'error': 'You have already reviewed this job'}, status=400)
+
+    try:
+        repair_request = RepairRequests.objects.get(
+            request_id=request_id,
+            customer_id=customer_id,
+            status='completed'
+        )
+    except RepairRequests.DoesNotExist:
+        return Response({'error': 'Request not found or not completed'}, status=404)
+
+    review = Reviews.objects.create(
+        request=repair_request,
+        customer_id=customer_id,
+        master_id=repair_request.assigned_master_id,
+        rating=rating,
+        comment=request.data.get('comment', '')
+    )
+
+    serializer = ReviewSerializer(review)
+    return Response(serializer.data, status=201)
+
+
+@api_view(['GET'])
+def get_reviews(request):
+    master_id = request.query_params.get('master_id')
+    if master_id:
+        reviews = Reviews.objects.filter(
+            master_id=master_id).order_by('-created_at')
+    else:
+        reviews = Reviews.objects.all().order_by('-created_at')
+    serializer = ReviewSerializer(reviews, many=True)
+    return Response(serializer.data)
