@@ -2,10 +2,18 @@ import { useEffect, useState } from 'react';
 import { getStats } from '../services/api';
 import Spinner from '../components/spinner';
 import PageWrapper from '../components/pageWrapper';
+import {BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend} from 'recharts';
 
 export default function Stats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const STATUS_COLORS = {
+  new: '#89b4fa',
+  assigned: '#cba6f7',
+  in_progress: '#f9e2af',
+  completed: '#a6e3a1',
+  cancelled: '#f38ba8',
+};
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -33,7 +41,7 @@ export default function Stats() {
   return (
     <PageWrapper>
       <div>
-        <h2>Statistics</h2>
+        <h2 style={{color:'#888'}}>Statistics</h2>
 
         {/* key numbers */}
         <div style={styles.grid}>
@@ -45,44 +53,48 @@ export default function Stats() {
           <StatCard label="Available Masters" value={stats.available_masters} color="#94e2d5" />
         </div>
 
-        {/* by service */}
+        {/* by service — bar chart */}
         <h3>Requests by Service</h3>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Service</th>
-              <th style={styles.th}>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.by_service.map((row, i) => (
-              <tr key={i}>
-                <td style={styles.td}>{row['service__name']}</td>
-                <td style={styles.td}>{row.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <div style={{ width: '100%', height: 240 }}>
+          <ResponsiveContainer>
+            <BarChart data={stats.by_service} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
+              <XAxis dataKey="service__name" tick={{ fontSize: 12 }} />
+              <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
+              <Tooltip />
+              <Bar dataKey="total" fill="#89b4fa" radius={[6, 6, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
 
-        {/* by status */}
+        {/* by status — pie chart */}
         <h3>Requests by Status</h3>
-        <table style={styles.table}>
-          <thead>
-            <tr>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {stats.by_status.map((row, i) => (
-              <tr key={i}>
-                <td style={styles.td}>{row.status}</td>
-                <td style={styles.td}>{row.total}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+        <div style={{ width: '100%', height: 260 }}>
+          <ResponsiveContainer>
+            <PieChart>
+              <Pie
+                data={stats.by_status}
+                dataKey="total"
+                nameKey="status"
+                cx="50%"
+                cy="50%"
+                outerRadius={90}
+                label={({ status, percent }) =>
+                  `${status} ${(percent * 100).toFixed(0)}%`
+                }
+              >
+                {stats.by_status.map((entry, index) => (
+                  <Cell
+                    key={index}
+                    fill={STATUS_COLORS[entry.status] || '#ccc'}
+                  />
+                ))}
+              </Pie>
+              <Legend />
+              <Tooltip />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+        </div>
     </PageWrapper>
   );
 }

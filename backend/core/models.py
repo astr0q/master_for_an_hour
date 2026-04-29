@@ -86,3 +86,17 @@ class Services(models.Model):
     class Meta:
         managed = False
         db_table = 'services'
+
+
+class Reviews(models.Model):
+    review_id = models.AutoField(primary_key=True)
+    request = models.ForeignKey(RepairRequests, models.DO_NOTHING)
+    customer = models.ForeignKey(Profiles, models.DO_NOTHING, related_name='reviews_given')
+    master = models.ForeignKey(Profiles, models.DO_NOTHING, related_name='reviews_received')
+    rating = models.IntegerField()
+    comment = models.CharField(max_length=500, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'reviews'

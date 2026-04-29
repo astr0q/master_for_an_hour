@@ -9,7 +9,7 @@ const roleColors = {
 };
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { user, logout, darkMode, toggleDarkMode } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -56,6 +56,9 @@ export default function Navbar() {
 
         {user && (
           <div style={styles.userArea}>
+            <button onClick={toggleDarkMode} style={styles.darkBtn} title="Toggle dark mode">
+              {darkMode ? '☀️' : '🌙'}
+            </button>
             <NotificationBell />
 
             <span style={styles.userInfo}>
@@ -81,6 +84,13 @@ export default function Navbar() {
 }
 
 const styles = {
+  darkBtn: {
+  background: 'none',
+  border: 'none',
+  fontSize: '18px',
+  cursor: 'pointer',
+  padding: '4px',
+  },
   nav: {
     display: 'flex',
     justifyContent: 'space-between',

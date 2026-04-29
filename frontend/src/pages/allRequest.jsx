@@ -71,7 +71,7 @@ export default function AllRequests() {
   return (
     <PageWrapper>
       <div>
-        <h2>All Requests</h2>
+        <h2 style={{color:'#888'}}>All Requests</h2>
 
         {requests.map(r => (
           <div key={r.request_id} style={styles.card}>
@@ -95,20 +95,17 @@ export default function AllRequests() {
               <label>Assign master:</label>
 
               <select
-                value={selectedMasters[r.request_id] ?? r.assigned_master_id ?? ''}
-                onChange={(e) =>
-                  setSelectedMasters({
-                    ...selectedMasters,
-                    [r.request_id]: e.target.value
-                  })
-                }
-              >
-                <option value="">-- select master --</option>
-                {masters.map(m => (
-                  <option key={m.profile_id} value={m.profile_id}>
-                    {m.first_name} {m.last_name}
-                  </option>
-                ))}
+              value={selectedMasters[r.request_id] ?? r.assigned_master_id ?? ''}
+              onChange={(e) =>
+                setSelectedMasters({ ...selectedMasters, [r.request_id]: e.target.value })
+              }
+            >
+              <option value="">-- select master --</option>
+              {masters.map(m => (
+                <option key={m.profile_id} value={m.profile_id}>
+                  {m.is_available === true ? '🟢' : m.is_available === false ? '🔴' : '⚪'} {m.first_name} {m.last_name}
+                </option>
+              ))}
               </select>
 
               <button
