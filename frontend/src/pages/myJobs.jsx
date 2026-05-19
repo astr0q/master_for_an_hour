@@ -5,7 +5,7 @@ import Spinner from '../components/spinner';
 import PageWrapper from '../components/pageWrapper';
 
 const statusColors = {
-  new: '#89b4fa',
+  new: '#22C55E',
   assigned: '#cba6f7',
   in_progress: '#f9e2af',
   completed: '#a6e3a1',
@@ -151,7 +151,7 @@ export default function MyJobs() {
 
 const styles = {
   card: {
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     borderRadius: '8px',
     padding: '16px',
     marginBottom: '16px',
@@ -177,10 +177,12 @@ const styles = {
   textarea: {
     width: '100%',
     borderRadius: '6px',
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     padding: '8px',
     fontSize: '14px',
     resize: 'vertical',
+    backgroundColor: '#111827',
+    color: '#F9FAFB',
   },
   buttons: {
     display: 'flex',

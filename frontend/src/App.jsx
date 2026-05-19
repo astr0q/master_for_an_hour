@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/authContext';
 import Navbar from './components/navbar';
 import ProtectedRoute from './components/protectedRoute';
+import Landing from './pages/Landing';
 import Login from './pages/login';
 import Register from './pages/register';
 import NewRequest from './pages/newRequest';
@@ -12,24 +13,23 @@ import Availability from './pages/availability';
 import History from './pages/history';
 import Stats from './pages/stats';
 import Reports from './pages/reports';
-import Chatbot from './components/chatbot';
 import Footer from './components/footer';
 
 function Assign() { return <h2>Assign Masters</h2>; }
 
 function AppLayout() {
-  const { darkMode } = useAuth();
-
   return (
     <div style={{
       minHeight: '100vh',
-      backgroundColor: darkMode ? '#11111b' : '#f5f4fa',
-      color: darkMode ? '#f5f4fa' : '#181825',
-      transition: 'background-color 0.3s, color 0.3s',
+      display: 'flex',
+      flexDirection: 'column',
+      backgroundColor: '#111827',
+      color: '#F9FAFB',
     }}>
       <Navbar />
-      <div style={{ padding: '24px' }}>
+      <div style={{ padding: '24px', flex: 1 }}>
         <Routes>
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
@@ -63,10 +63,9 @@ function AppLayout() {
           <ProtectedRoute roles={['operator']}><Reports /></ProtectedRoute>
           }/>
 
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
-      <Chatbot />
       <Footer />
     </div>
   );

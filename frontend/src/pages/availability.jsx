@@ -101,8 +101,8 @@ export default function Availability() {
 
 const styles = {
   card: {
-    backgroundColor: 'white',
-    border: '1px solid #e5e5ea',
+    backgroundColor: '#1F2937',
+    border: '1px solid #374151',
     borderRadius: '10px',
     padding: '24px',
     maxWidth: '560px',
@@ -119,6 +119,7 @@ const styles = {
     gap: '10px',
     fontSize: '15px',
     cursor: 'pointer',
+    color: '#F9FAFB',
   },
   checkbox: {
     width: '18px',
@@ -130,7 +131,7 @@ const styles = {
     borderRadius: '12px',
     fontSize: '12px',
     fontWeight: 'bold',
-    color: '#1e1e2e',
+    color: '#111827',
   },
   field: {
     marginBottom: '20px',
@@ -139,21 +140,23 @@ const styles = {
     display: 'block',
     fontSize: '13px',
     fontWeight: '600',
-    color: '#444',
+    color: '#D1D5DB',
     marginBottom: '6px',
   },
   textarea: {
     width: '100%',
     padding: '10px 12px',
     borderRadius: '8px',
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     fontSize: '14px',
     fontFamily: 'inherit',
     resize: 'vertical',
+    backgroundColor: '#111827',
+    color: '#F9FAFB',
   },
   btnSave: {
-    backgroundColor: '#89b4fa',
-    color: 'white',
+    backgroundColor: '#22C55E',
+    color: '#111827',
     border: 'none',
     padding: '10px 24px',
     borderRadius: '8px',

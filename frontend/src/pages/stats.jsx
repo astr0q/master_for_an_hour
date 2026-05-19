@@ -8,7 +8,7 @@ export default function Stats() {
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
   const STATUS_COLORS = {
-  new: '#89b4fa',
+  new: '#22C55E',
   assigned: '#cba6f7',
   in_progress: '#f9e2af',
   completed: '#a6e3a1',
@@ -45,7 +45,7 @@ export default function Stats() {
 
         {/* key numbers */}
         <div style={styles.grid}>
-          <StatCard label="Total Requests" value={stats.total_requests} color="#89b4fa" />
+          <StatCard label="Total Requests" value={stats.total_requests} color="#22C55E" />
           <StatCard label="Active" value={stats.active_requests} color="#f9e2af" />
           <StatCard label="Completed" value={stats.completed_requests} color="#a6e3a1" />
           <StatCard label="Cancelled" value={stats.cancelled_requests} color="#f38ba8" />
@@ -61,7 +61,7 @@ export default function Stats() {
               <XAxis dataKey="service__name" tick={{ fontSize: 12 }} />
               <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
               <Tooltip />
-              <Bar dataKey="total" fill="#89b4fa" radius={[6, 6, 0, 0]} />
+              <Bar dataKey="total" fill="#22C55E" radius={[6, 6, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -118,7 +118,7 @@ const styles = {
   card: {
     padding: '16px',
     borderRadius: '8px',
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     textAlign: 'center',
   },
   cardValue: {
@@ -127,7 +127,7 @@ const styles = {
   },
   cardLabel: {
     fontSize: '13px',
-    color: '#888',
+    color: '#9CA3AF',
     marginTop: '4px',
   },
   table: {
@@ -138,12 +138,12 @@ const styles = {
   th: {
     textAlign: 'left',
     padding: '10px',
-    borderBottom: '2px solid #ccc',
+    borderBottom: '2px solid #374151',
     fontSize: '14px',
   },
   td: {
     padding: '10px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #374151',
     fontSize: '14px',
   }
 };

@@ -1,53 +1,30 @@
-*, *::before, *::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+/* Base Reset - Already handled by design-system.css */
+/* Keep minimal overrides here */
+
+/* Import modern fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700&display=swap');
 
 body {
-  background-image: url('./assets/back_pic.png');
-  background-attachment: fixed;
-  background-size: cover;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-color: #f4f4f8; /* fallback during load */
+  font-family: 'Inter', 'Segoe UI', sans-serif;
 }
 
-h2 {
-  font-size: 22px;
-  font-weight: 600;
-  margin-bottom: 20px;
-  color: #1e1e2e;
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-h3 {
-  font-size: 17px;
-  font-weight: 600;
-  margin: 24px 0 12px;
-  color: #1e1e2e;
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
 }
 
-input, select, textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
-  font-family: inherit;
-  background: white;
-  color: #1e1e2e;
-  margin-bottom: 4px;
-  transition: border-color 0.2s;
+::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
 }
 
-input:focus, select:focus, textarea:focus {
-  outline: none;
-  border-color: #89b4fa;
-}
-
-button {
-  font-family: inherit;
-  cursor: pointer;
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dark);
 }
 
 a {

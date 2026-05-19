@@ -11,36 +11,39 @@ A university individual project. A web-based repair request management system th
 ### Current Limitations
 
 #### Desktop Registration & Permissions
+
 When registering a new account via a desktop browser, a permission pop-up will appear after clicking the **Register** button.
 
 - **Action Required:** You must select **Allow** for the registration to complete successfully.
 - **Outcome of Denial:** If permissions are denied, the registration process will fail and the account will not be created.
 
 #### Mobile Access
+
 Currently, registration is **not supported** on mobile devices. Users attempting to sign up via a smartphone will receive a "Registration failed" error message.
 
 #### Technical Root Cause & Future Fix
+
 These limitations stem from known backend connectivity issues between **Django** and **Vercel's** serverless infrastructure. To resolve these, it is recommended to migrate the backend to a dedicated hosting provider such as **AWS**, **DigitalOcean**, or **Railway** that supports persistent connections.
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React (Vite) |
-| Backend | Django + Django REST Framework |
-| Database | Supabase (PostgreSQL) |
-| Auth | Custom (email + password, role-based) |
-| Charts | Recharts |
-| AI Chatbot | OpenRouter API (Mistral / Llama) |
-| Styling | Inline React styles + global CSS |
+| Layer    | Technology                            |
+| -------- | ------------------------------------- |
+| Frontend | React (Vite)                          |
+| Backend  | Django + Django REST Framework        |
+| Database | Supabase (PostgreSQL)                 |
+| Auth     | Custom (email + password, role-based) |
+| Charts   | Recharts                              |
+| Styling  | Inline React styles + global CSS      |
 
 ---
 
 ## User Roles
 
 **Customer**
+
 - Create repair service requests (service type, address, date/time)
 - Track the status of their requests in real time
 - View history of completed and cancelled repairs
@@ -48,6 +51,7 @@ These limitations stem from known backend connectivity issues between **Django**
 - Receive notifications when request status changes
 
 **Operator (Dispatcher)**
+
 - View all incoming repair requests
 - Assign masters to requests based on availability (with live availability indicator)
 - Update and manage request statuses
@@ -56,6 +60,7 @@ These limitations stem from known backend connectivity issues between **Django**
 - Access full repair history with filters
 
 **Master (Worker)**
+
 - View assigned repair jobs
 - Mark jobs as in progress and completed
 - Add notes to completed tasks
@@ -78,7 +83,6 @@ These limitations stem from known backend connectivity issues between **Django**
 - Input validation on both frontend and backend
 - Protected routes — each role only sees their own pages
 - Dark mode toggle with preference saved to localStorage
-- AI-powered support chatbot (OpenRouter) with knowledge base and quick questions
 - Footer with contact info, services list, and embedded Google Maps location
 
 ---
@@ -107,7 +111,6 @@ master-for-an-hour/
         ├── components/
         ├── services/
         ├── context/
-        ├── chatbot/          # AI chatbot knowledge base
         └── utils/
 ```
 
@@ -115,15 +118,15 @@ master-for-an-hour/
 
 ## Database Schema (Supabase / PostgreSQL)
 
-| Table | Description |
-|---|---|
-| `profiles` | All users (customer, operator, master) |
-| `services` | Available repair service types (15 services) |
-| `repair_requests` | Core repair request records |
-| `request_updates` | Status change history and notes |
-| `master_availability` | Master availability status |
-| `notifications` | In-app notifications per user |
-| `reviews` | Customer star ratings and comments for completed jobs |
+| Table                 | Description                                           |
+| --------------------- | ----------------------------------------------------- |
+| `profiles`            | All users (customer, operator, master)                |
+| `services`            | Available repair service types (15 services)          |
+| `repair_requests`     | Core repair request records                           |
+| `request_updates`     | Status change history and notes                       |
+| `master_availability` | Master availability status                            |
+| `notifications`       | In-app notifications per user                         |
+| `reviews`             | Customer star ratings and comments for completed jobs |
 
 ---
 
@@ -134,7 +137,7 @@ master-for-an-hour/
 - Python 3.10+
 - Node.js 18+
 - A Supabase project with the schema already created
-- An OpenRouter API key (free at https://openrouter.ai) for the chatbot
+- An OpenRouter API key (free at https://openrouter.
 
 ### 1. Clone the repository
 
@@ -181,40 +184,34 @@ npm run dev
 
 Create a `.env` file inside `frontend/`:
 
-```
-VITE_OPENROUTER_API_KEY=your-openrouter-api-key-here
-```
-
-Frontend runs at: `http://localhost:5173`
-
 > Both servers must be running simultaneously for the application to work.
 
 ---
 
 ## API Endpoints
 
-| Method | Endpoint | Description |
-|---|---|---|
-| POST | `/api/register/` | Register a new user |
-| POST | `/api/login/` | Login and get user data |
-| GET | `/api/services/` | List all services |
-| POST | `/api/requests/create/` | Customer creates a request |
-| GET | `/api/requests/` | Get requests (role-filtered) |
-| GET | `/api/requests/history/` | Get completed/cancelled requests |
-| GET | `/api/requests/master/<id>/` | Get master's assigned jobs |
-| PATCH | `/api/requests/<id>/status/` | Update request status |
-| PATCH | `/api/requests/<id>/assign/` | Assign master to request |
-| PATCH | `/api/requests/<id>/progress/` | Master updates job progress |
-| GET | `/api/masters/` | List all masters with availability |
-| GET | `/api/availability/` | Get master availability |
-| POST | `/api/availability/update/` | Update master availability |
-| GET | `/api/stats/` | Get statistics and chart data |
-| GET | `/api/reports/` | Get filtered report data |
-| GET | `/api/notifications/` | Get user notifications |
-| PATCH | `/api/notifications/read/<id>/` | Mark notification as read |
-| PATCH | `/api/notifications/read-all/` | Mark all notifications as read |
-| POST | `/api/reviews/submit/` | Submit a star rating and comment |
-| GET | `/api/reviews/` | Get reviews (filterable by master) |
+| Method | Endpoint                        | Description                        |
+| ------ | ------------------------------- | ---------------------------------- |
+| POST   | `/api/register/`                | Register a new user                |
+| POST   | `/api/login/`                   | Login and get user data            |
+| GET    | `/api/services/`                | List all services                  |
+| POST   | `/api/requests/create/`         | Customer creates a request         |
+| GET    | `/api/requests/`                | Get requests (role-filtered)       |
+| GET    | `/api/requests/history/`        | Get completed/cancelled requests   |
+| GET    | `/api/requests/master/<id>/`    | Get master's assigned jobs         |
+| PATCH  | `/api/requests/<id>/status/`    | Update request status              |
+| PATCH  | `/api/requests/<id>/assign/`    | Assign master to request           |
+| PATCH  | `/api/requests/<id>/progress/`  | Master updates job progress        |
+| GET    | `/api/masters/`                 | List all masters with availability |
+| GET    | `/api/availability/`            | Get master availability            |
+| POST   | `/api/availability/update/`     | Update master availability         |
+| GET    | `/api/stats/`                   | Get statistics and chart data      |
+| GET    | `/api/reports/`                 | Get filtered report data           |
+| GET    | `/api/notifications/`           | Get user notifications             |
+| PATCH  | `/api/notifications/read/<id>/` | Mark notification as read          |
+| PATCH  | `/api/notifications/read-all/`  | Mark all notifications as read     |
+| POST   | `/api/reviews/submit/`          | Submit a star rating and comment   |
+| GET    | `/api/reviews/`                 | Get reviews (filterable by master) |
 
 ---
 
@@ -222,33 +219,33 @@ Frontend runs at: `http://localhost:5173`
 
 The system includes 15 real-world repair and home services:
 
-| # | Service | Base Price |
-|---|---|---|
-| 1 | Plumbing | €50 |
-| 2 | Electrical Work | €70 |
-| 3 | Furniture Repair | €40 |
-| 4 | Painting & Decorating | €60 |
-| 5 | Appliance Repair | €80 |
-| 6 | Locksmith | €55 |
-| 7 | Carpentry | €65 |
-| 8 | Cleaning | €45 |
-| 9 | Tiling | €75 |
-| 10 | Boiler Service | €90 |
-| 11 | Roof Repair | €100 |
-| 12 | Window Repair | €60 |
-| 13 | Floor Installation | €85 |
-| 14 | Garden & Landscaping | €50 |
-| 15 | Pest Control | €70 |
+| #   | Service               | Base Price |
+| --- | --------------------- | ---------- |
+| 1   | Plumbing              | €50        |
+| 2   | Electrical Work       | €70        |
+| 3   | Furniture Repair      | €40        |
+| 4   | Painting & Decorating | €60        |
+| 5   | Appliance Repair      | €80        |
+| 6   | Locksmith             | €55        |
+| 7   | Carpentry             | €65        |
+| 8   | Cleaning              | €45        |
+| 9   | Tiling                | €75        |
+| 10  | Boiler Service        | €90        |
+| 11  | Roof Repair           | €100       |
+| 12  | Window Repair         | €60        |
+| 13  | Floor Installation    | €85        |
+| 14  | Garden & Landscaping  | €50        |
+| 15  | Pest Control          | €70        |
 
 ---
 
 ## Test Accounts (Seeded Data)
 
-| Role | Email | Password |
-|---|---|---|
-| Customer | customer@test.com | 1234 |
-| Operator | operator@test.com | 1234 |
-| Master | master@test.com | 1234 |
+| Role     | Email             | Password |
+| -------- | ----------------- | -------- |
+| Customer | customer@test.com | 1234     |
+| Operator | operator@test.com | 1234     |
+| Master   | master@test.com   | 1234     |
 
 > Seed these manually in Supabase or via the register form before testing.
 
@@ -260,4 +257,4 @@ The system includes 15 real-world repair and home services:
 - Passwords are stored as plain text (acceptable for university project scope — in production, bcrypt hashing would be used)
 - No third-party auth — authentication is handled manually via the `profiles` table
 - RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
-- The AI chatbot uses the free tier of OpenRouter and requires an internet connection
+- The AI chatbot uses the free tier of OpenRouter and requires an internet connection+

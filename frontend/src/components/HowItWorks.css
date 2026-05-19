@@ -1,0 +1,190 @@
+/* How It Works Section Styles */
+
+.how-it-works {
+  padding: 100px 0;
+  position: relative;
+}
+
+.steps-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 40px;
+  position: relative;
+  padding: 60px 0;
+}
+
+.step-item {
+  position: relative;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Step Number */
+.step-number {
+  position: absolute;
+  top: -40px;
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  opacity: 0.3;
+  font-family: var(--font-display);
+}
+
+/* Step Icon */
+.step-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+  border: 2px solid rgba(34, 197, 94, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  transition: all var(--transition-base);
+}
+
+.step-item:hover .step-icon {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2), rgba(16, 185, 129, 0.1));
+  border-color: var(--accent-primary);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 32px rgba(34, 197, 94, 0.15);
+}
+
+/* Step Title */
+.step-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+/* Step Description */
+.step-description {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+/* Step Connector */
+.step-connector {
+  position: absolute;
+  bottom: -40px;
+  right: -50%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-primary), transparent);
+  display: none;
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+  .step-connector {
+    display: block;
+  }
+
+  .steps-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .step-item:nth-child(odd) .step-connector {
+    right: -50%;
+  }
+
+  .step-item:nth-child(even) .step-connector {
+    display: none;
+  }
+}
+
+@media (min-width: 1025px) {
+  .step-connector {
+    display: block;
+  }
+
+  .step-item:last-child .step-connector {
+    display: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .steps-container {
+    gap: 60px 30px;
+  }
+
+  .step-item {
+    gap: 16px;
+  }
+
+  .step-icon {
+    width: 70px;
+    height: 70px;
+    font-size: 32px;
+  }
+
+  .step-title {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .how-it-works {
+    padding: 80px 0;
+  }
+
+  .steps-container {
+    grid-template-columns: 1fr;
+    gap: 40px;
+    padding: 40px 0;
+  }
+
+  .step-number {
+    font-size: 32px;
+  }
+
+  .step-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 28px;
+  }
+
+  .step-title {
+    font-size: 17px;
+  }
+
+  .step-description {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .how-it-works {
+    padding: 60px 0;
+  }
+
+  .steps-container {
+    gap: 30px;
+    padding: 30px 0;
+  }
+
+  .step-number {
+    font-size: 24px;
+    top: -30px;
+  }
+
+  .step-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
+  }
+
+  .step-title {
+    font-size: 15px;
+  }
+
+  .step-description {
+    font-size: 12px;
+  }
+}

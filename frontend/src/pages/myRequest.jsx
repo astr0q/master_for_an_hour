@@ -11,7 +11,7 @@ export default function MyRequests() {
   const [loading, setLoading] = useState(true);
 
   const statusColors = {
-  new: '#89b4fa',
+  new: '#22C55E',
   assigned: '#cba6f7',
   in_progress: '#f9e2af',
   completed: '#a6e3a1',
@@ -125,7 +125,7 @@ export default function MyRequests() {
                         ...prev,
                         [r.request_id]: { ...prev[r.request_id], comment: e.target.value }
                       }))}
-                      style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #ccc', fontSize: '13px', marginBottom: '8px' }}
+                      style={{ width: '100%', padding: '6px 10px', borderRadius: '6px', border: '1px solid #374151', fontSize: '13px', marginBottom: '8px' }}
                     />
                     <button
                       onClick={async () => {
@@ -171,7 +171,7 @@ export default function MyRequests() {
 
 const styles = {
   card: {
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     borderRadius: '8px',
     padding: '16px',
     marginBottom: '12px',
@@ -186,14 +186,14 @@ const styles = {
   reviewBox: {
   marginTop: '12px',
   paddingTop: '12px',
-  borderTop: '1px solid #eee',
+  borderTop: '1px solid #374151',
   },
   stars: {
     fontSize: '18px',
     color: '#f9e2af',
   },
   reviewBtn: {
-    backgroundColor: '#89b4fa',
+    backgroundColor: '#22C55E',
     border: 'none',
     padding: '6px 16px',
     borderRadius: '6px',

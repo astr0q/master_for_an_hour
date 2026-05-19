@@ -187,7 +187,7 @@ const styles = {
     alignItems: 'center',
   },
   btnApply: {
-    backgroundColor: '#89b4fa',
+    backgroundColor: '#22C55E',
     border: 'none',
     padding: '6px 16px',
     borderRadius: '6px',
@@ -195,14 +195,15 @@ const styles = {
     fontWeight: 'bold',
   },
   btnClear: {
-    backgroundColor: '#ccc',
+    backgroundColor: '#374151',
     border: 'none',
     padding: '6px 16px',
     borderRadius: '6px',
     cursor: 'pointer',
+    color: '#D1D5DB',
   },
   card: {
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     borderRadius: '8px',
     padding: '16px',
     marginBottom: '12px',
@@ -220,7 +221,7 @@ const styles = {
     fontWeight: 'bold',
   },
   desc: {
-    color: '#666',
+    color: '#D1D5DB',
     fontSize: '14px',
   },
   meta: {
@@ -229,6 +230,6 @@ const styles = {
     gap: '16px',
     marginTop: '10px',
     fontSize: '13px',
-    color: '#888',
+    color: '#9CA3AF',
   }
 };

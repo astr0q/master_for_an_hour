@@ -6,7 +6,7 @@ import PageWrapper from '../components/pageWrapper';
 const STATUS_OPTIONS = ['new', 'assigned', 'in_progress', 'completed', 'cancelled'];
 
 const statusColors = {
-  new: '#89b4fa',
+  new: '#22C55E',
   assigned: '#cba6f7',
   in_progress: '#f9e2af',
   completed: '#a6e3a1',
@@ -184,7 +184,7 @@ export default function Reports() {
             <h3>Summary</h3>
 
             <div style={styles.summaryGrid}>
-              <SummaryBox label="Total" value={summary.total} color="#89b4fa" />
+              <SummaryBox label="Total" value={summary.total} color="#22C55E" />
               <SummaryBox label="Completed" value={summary.completed} color="#a6e3a1" />
               <SummaryBox label="Cancelled" value={summary.cancelled} color="#f38ba8" />
               <SummaryBox label="In Progress" value={summary.in_progress} color="#f9e2af" />
@@ -269,7 +269,7 @@ const styles = {
     alignItems: 'center',
   },
   btnGenerate: {
-    backgroundColor: '#89b4fa',
+    backgroundColor: '#22C55E',
     border: 'none',
     padding: '6px 18px',
     borderRadius: '6px',
@@ -291,7 +291,7 @@ const styles = {
   summaryCard: {
     padding: '14px',
     borderRadius: '8px',
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     textAlign: 'center',
   },
   cardValue: {
@@ -300,7 +300,7 @@ const styles = {
   },
   cardLabel: {
     fontSize: '12px',
-    color: '#888',
+    color: '#9CA3AF',
     marginTop: '4px',
   },
   table: {
@@ -310,12 +310,12 @@ const styles = {
   th: {
     textAlign: 'left',
     padding: '10px',
-    borderBottom: '2px solid #ccc',
+    borderBottom: '2px solid #374151',
     fontSize: '13px',
   },
   td: {
     padding: '10px',
-    borderBottom: '1px solid #eee',
+    borderBottom: '1px solid #374151',
     fontSize: '13px',
   },
   badge: {

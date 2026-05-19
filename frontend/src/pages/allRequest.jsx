@@ -120,7 +120,7 @@ export default function AllRequests() {
             </div>
 
             {r.assigned_master_name && (
-              <p style={{ color: '#888', fontSize: '13px' }}>
+              <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
                 Currently assigned: {r.assigned_master_name}
               </p>
             )}
@@ -135,7 +135,7 @@ export default function AllRequests() {
 
 const styles = {
   card: {
-    border: '1px solid #ccc',
+    border: '1px solid #374151',
     borderRadius: '8px',
     padding: '16px',
     marginBottom: '12px',

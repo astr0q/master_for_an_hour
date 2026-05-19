@@ -1,146 +1,79 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
 import NotificationBell from './notificationBell';
-
-const roleColors = {
-  customer: '#89b4fa',
-  operator: '#cba6f7',
-  master: '#a6e3a1',
-};
+import './navbar.css';
 
 export default function Navbar() {
-  const { user, logout, darkMode, toggleDarkMode } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
-    <nav style={styles.nav}>
-      <span style={styles.brand}>Master for an Hour</span>
+    <nav className="navbar">
+      <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0 var(--space-6)' }}>
+        {/* Brand/Logo */}
+        <Link to="/" className="navbar-brand">
+          <span className="brand-icon">🔧</span>
+          <span className="brand-text">Master for an Hour</span>
+        </Link>
 
-      <div style={styles.links}>
-        {!user && (
-          <>
-            <Link to="/login" style={styles.link}>Login</Link>
-            <Link to="/register" style={styles.link}>Register</Link>
-          </>
-        )}
+        {/* Nav Links */}
+        <div className="navbar-links">
+          {!user && (
+            <>
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/login" className="nav-link">Login</Link>
+              <Link to="/register" className="nav-link nav-link-primary">Register</Link>
+            </>
+          )}
 
-        {user?.role === 'customer' && (
-          <>
-            <Link to="/new-request" style={styles.link}>New Request</Link>
-            <Link to="/my-requests" style={styles.link}>My Requests</Link>
-            <Link to="/history" style={styles.link}>History</Link>
-          </>
-        )}
+          {user?.role === 'customer' && (
+            <>
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/new-request" className="nav-link">New Request</Link>
+              <Link to="/my-requests" className="nav-link">My Requests</Link>
+              <Link to="/history" className="nav-link">History</Link>
+            </>
+          )}
 
-        {user?.role === 'operator' && (
-          <>
-            <Link to="/all-requests" style={styles.link}>All Requests</Link>
-            <Link to="/assign" style={styles.link}>Assign Masters</Link>
-            <Link to="/history" style={styles.link}>History</Link>
-            <Link to="/stats" style={styles.link}>Stats</Link>
-            <Link to="/reports" style={styles.link}>Reports</Link>
-          </>
-        )}
+          {user?.role === 'operator' && (
+            <>
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/all-requests" className="nav-link">All Requests</Link>
+              <Link to="/history" className="nav-link">History</Link>
+              <Link to="/stats" className="nav-link">Stats</Link>
+              <Link to="/reports" className="nav-link">Reports</Link>
+            </>
+          )}
 
-        {user?.role === 'master' && (
-          <>
-            <Link to="/my-jobs" style={styles.link}>My Jobs</Link>
-            <Link to="/availability" style={styles.link}>Availability</Link>
-          </>
-        )}
+          {user?.role === 'master' && (
+            <>
+              <Link to="/" className="nav-link">Home</Link>
+              <Link to="/my-jobs" className="nav-link">My Jobs</Link>
+              <Link to="/availability" className="nav-link">Availability</Link>
+            </>
+          )}
 
-        {user && (
-          <div style={styles.userArea}>
-            <button onClick={toggleDarkMode} style={styles.darkBtn} title="Toggle dark mode">
-              {darkMode ? '☀️' : '🌙'}
-            </button>
-            <NotificationBell />
-
-            <span style={styles.userInfo}>
-              👤 {user.first_name} {user.last_name}
-              <span
-                style={{
-                  ...styles.roleBadge,
-                  backgroundColor: roleColors[user.role] || '#ccc'
-                }}
-              >
-                {user.role}
-              </span>
-            </span>
-
-            <button onClick={handleLogout} style={styles.logout}>
-              Logout
-            </button>
-          </div>
-        )}
+          {user && (
+            <div className="user-area">
+              <NotificationBell />
+              <div className="user-info">
+                <span className="user-name">{user.first_name} {user.last_name}</span>
+                <span className={`role-badge role-${user.role}`}>
+                  {user.role}
+                </span>
+              </div>
+              <button onClick={handleLogout} className="btn-logout">
+                Logout
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </nav>
   );
 }
-
-const styles = {
-  darkBtn: {
-  background: 'none',
-  border: 'none',
-  fontSize: '18px',
-  cursor: 'pointer',
-  padding: '4px',
-  },
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '12px 24px',
-    backgroundColor: '#1e1e2e',
-    color: 'white',
-  },
-  brand: {
-    fontWeight: 'bold',
-    fontSize: '18px',
-    color: 'white',
-  },
-  links: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-  },
-  link: {
-    color: '#cdd6f4',
-    textDecoration: 'none',
-    fontSize: '14px',
-  },
-  userArea: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    marginLeft: '12px',
-  },
-  userInfo: {
-    fontSize: '14px',
-    color: '#a6e3a1',
-    display: 'flex',
-    alignItems: 'center',
-    gap: '6px',
-  },
-  logout: {
-    backgroundColor: '#f38ba8',
-    color: 'white',
-    border: 'none',
-    padding: '6px 14px',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '14px',
-  },
-  roleBadge: {
-    padding: '2px 8px',
-    borderRadius: '10px',
-    fontSize: '11px',
-    fontWeight: 'bold',
-    color: '#111',
-  }
-};
