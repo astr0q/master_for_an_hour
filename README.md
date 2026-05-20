@@ -257,4 +257,4 @@ The system includes 15 real-world repair and home services:
 - Passwords are stored as plain text (acceptable for university project scope — in production, bcrypt hashing would be used)
 - No third-party auth — authentication is handled manually via the `profiles` table
 - RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
-- The AI chatbot uses the free tier of OpenRouter and requires an internet connection+
+
