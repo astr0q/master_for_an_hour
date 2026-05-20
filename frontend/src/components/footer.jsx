@@ -28,16 +28,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Company Column */}
-          <div className="footer-column">
-            <h4 className="footer-title">Company</h4>
-            <ul className="footer-list">
-              <li><a href="#about">About Us</a></li>
-              <li><a href="#how-it-works">How It Works</a></li>
-              <li><a href="#testimonials">Testimonials</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
-          </div>
 
           {/* Contact Column */}
           <div className="footer-column">
@@ -63,11 +53,6 @@ export default function Footer() {
         <div className="footer-bottom">
           <div className="footer-bottom-left">
             <p>© {currentYear} Master for an Hour. All rights reserved.</p>
-          </div>
-          <div className="footer-bottom-right">
-            <a href="#privacy">Privacy</a>
-            <a href="#terms">Terms</a>
-            <a href="#cookies">Cookies</a>
           </div>
         </div>
       </div>

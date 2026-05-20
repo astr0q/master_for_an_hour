@@ -74,10 +74,10 @@ export default function NotificationBell() {
               key={n.notification_id}
               style={{
                 ...styles.item,
-                backgroundColor: n.is_read ? 'transparent' : '#eef4ff',
+                backgroundColor: n.is_read ? 'transparent' : '#1F2937' ,
               }}
             >
-              <p style={{ ...styles.itemText, color: '#000' }}>
+              <p style={{ ...styles.itemText, color: '#eef4ff' }}>
                 {n.message}
             </p>
               <div style={styles.itemMeta}>
