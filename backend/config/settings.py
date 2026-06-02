@@ -12,9 +12,12 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
-from dotenv import load_dotenv
 
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 print("DB HOST:", os.getenv('DB_HOST'))
 print("DB USER:", os.getenv('DB_USER'))
