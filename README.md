@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> pre-work
 # Master for an Hour — Call Control System for Minor Repairs
 
 A university individual project. A web-based repair request management system that connects customers, operators, and masters (workers) through a structured workflow.
@@ -630,7 +626,5 @@ The system includes 15 real-world repair and home services:
 - Passwords are stored as plain text (acceptable for university project scope — in production, bcrypt hashing would be used)
 - No third-party auth — authentication is handled manually via the `profiles` table
 - RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
-
->>>>>>> 54394e9163a2108d6fe4330da920faa14511bb58
 =======
 >>>>>>> pre-work
