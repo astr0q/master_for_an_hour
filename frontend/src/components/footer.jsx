@@ -21,10 +21,9 @@ export default function Footer() {
             <h4 className="footer-title">Services</h4>
             <ul className="footer-list">
               <li><a href="#services">Plumbing</a></li>
-              <li><a href="#services">Electrical</a></li>
-              <li><a href="#services">Carpentry</a></li>
-              <li><a href="#services">Appliance Repair</a></li>
-              <li><a href="#services">View All</a></li>
+              <li><a href="#services">Electrical Work</a></li>
+              <li><a href="#services">Locksmith</a></li>
+              <li><a href="#services">Roof Repair</a></li>
             </ul>
           </div>
 
