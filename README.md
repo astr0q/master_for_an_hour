@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> pre-work
 # Master for an Hour — Call Control System for Minor Repairs
 
 A university individual project. A web-based repair request management system that connects customers, operators, and masters (workers) through a structured workflow.
@@ -41,6 +44,113 @@ These limitations stem from known backend connectivity issues between **Django**
 
 ---
 
+<<<<<<< HEAD
+=======
+## Design
+
+### Name and Brand
+
+**Master for an Hour** is a service platform brand designed to convey professionalism, reliability, and quick turnaround for home repair services. The name emphasizes speed and efficiency — customers can book skilled masters ("workers") for minor repairs and have them completed within an hour window. The project uses a premium dark-theme design system to establish a modern, professional appearance suitable for a SaaS-style service platform.
+
+### Structure and Layout
+
+The application is built as a **multi-role dashboard system** rather than a traditional one-page website. The architecture comprises:
+
+- **Landing Page**: Hero section showcasing the service value proposition, features overview, and call-to-action
+- **Authentication Pages**: Role-based login and registration
+- **Dashboard Pages**: Role-specific interfaces for customers, operators, and masters with protected routing
+- **Feature Pages**: Service requests, repair history, availability status, statistics, reports, and reviews
+
+This multi-page approach allows each user role to access only their relevant information, creating a focused and clutter-free experience. Navigation is handled via a persistent navbar with role-aware menu items and a notification bell icon for real-time updates.
+
+### Colour Scheme
+
+The design system employs a **premium dark SaaS palette** with high contrast for accessibility:
+
+**Primary Colors:**
+- **Background Primary**: `#111827` (Very dark navy) — Main page background
+- **Background Secondary**: `#1F2937` (Dark gray) — Card and component backgrounds
+- **Background Tertiary**: `#374151` (Lighter gray) — Hover states and secondary surfaces
+- **Accent Primary**: `#22C55E` (Emerald green) — Call-to-action buttons, active states, and highlights
+- **Accent Light**: `#86EFAC` (Light green) — Hover effects and secondary accents
+- **Accent Dark**: `#16A34A` (Dark green) — Active/pressed states
+
+**Text Colors:**
+- **Text Primary**: `#F9FAFB` (Off-white) — Main content text
+- **Text Secondary**: `#D1D5DB` (Light gray) — Secondary content and labels
+- **Text Tertiary**: `#9CA3AF` (Muted gray) — Disabled text and placeholders
+
+**Rationale**: The dark theme reduces eye strain during extended use (important for operators managing multiple requests), while the emerald accent color suggests growth, reliability, and trust — key values for a service platform. The high contrast between dark backgrounds and light text ensures WCAG AA compliance for accessibility.
+
+### Fonts
+
+Two carefully selected fonts provide hierarchy and convey professionalism:
+
+**Primary Font: Inter**
+- Used for all body text, labels, and secondary content
+- Modern, highly legible sans-serif with excellent on-screen rendering
+- Designed by Rasmus Andersson for geometric clarity at all sizes
+- Font sizes range from 12px (captions) to 56px (large headlines)
+
+**Display Font: Outfit**
+- Used for headings, navigation, and emphasis
+- Geometric sans-serif with a distinctive character suitable for tech-forward branding
+- Weights: 600 (semibold) and 700 (bold) for strong visual hierarchy
+
+**Typography Scale:**
+- `--text-xs`: 12px
+- `--text-sm`: 14px (labels, captions)
+- `--text-base`: 16px (body text, default)
+- `--text-lg`: 18px (secondary headings)
+- `--text-2xl`: 24px (section headings)
+- `--text-3xl`: 32px
+- `--text-4xl`: 42px (major headings)
+- `--text-5xl`: 56px (hero/landing page headlines)
+
+### Navigation and Page Relationships
+
+The application uses **role-based routing** to establish logical connections:
+
+- **Authentication Flow**: Landing → Login/Register → Role-specific Dashboard
+- **Customer Journey**: Create Request → Track Status → View History → Leave Review
+- **Operator Workflow**: View Requests → Assign Masters → Update Status → View Reports
+- **Master Experience**: View Jobs → Update Progress → Mark Complete
+
+All pages link back to the dashboard (sidebar/navbar navigation), and contextual links connect related information (e.g., clicking a service type filters to relevant requests). The notification bell provides quick access to real-time updates across all pages.
+
+### Visual Design Elements
+
+**Spacing and Rhythm:**
+- Consistent 8px base unit for spacing (4px, 8px, 12px, 16px, 24px, etc.)
+- Contributes to a balanced, organized layout
+
+**Border Radius:**
+- Rounded corners create a modern, approachable feel: 8px (buttons), 12px (cards), 16px (modals)
+- Softens the technical nature of the platform
+
+**Shadows and Depth:**
+- Multi-layered shadow system (`--shadow-sm` through `--shadow-xl`) creates visual depth
+- Cards and modals use subtle shadows to separate from background without overwhelming
+
+**Transitions:**
+- Smooth animations (150ms–350ms) provide visual feedback for interactions
+- Cubic-bezier easing creates professional, polished motion
+
+**Interactions:**
+- Green accent color highlights on hover and active states
+- Visibility indicator (🟢 online / 🔴 offline) for master availability at a glance
+- Input validation with clear visual feedback (focus rings, error messages)
+
+### Imagery and Media
+
+- **Charts**: Recharts library provides professional bar charts (services breakdown) and pie charts (status distribution)
+- **Icons**: Notification bell, status indicators, and role badges for quick visual identification
+- **Color-Coded Status**: Request lifecycle uses consistent visual markers (pending, assigned, in progress, completed, cancelled)
+- **Typography as Visual Element**: Uppercase service names and consistent heading styles create brand consistency
+
+---
+
+>>>>>>> pre-work
 ## User Roles
 
 **Customer**
@@ -259,6 +369,7 @@ The system includes 15 real-world repair and home services:
 - No third-party auth — authentication is handled manually via the `profiles` table
 - RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
 - The AI chatbot uses the free tier of OpenRouter and requires an internet connection+
+<<<<<<< HEAD
 =======
 # Master for an Hour — Call Control System for Minor Repairs
 
@@ -521,3 +632,5 @@ The system includes 15 real-world repair and home services:
 - RLS (Row Level Security) is not enabled — the project is not intended for public production deployment
 
 >>>>>>> 54394e9163a2108d6fe4330da920faa14511bb58
+=======
+>>>>>>> pre-work

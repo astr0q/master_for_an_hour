@@ -100,10 +100,7 @@ export default function HeroSection() {
 
             {/* CTA */}
             <div className="hero-cta">
-              <button className="btn btn-primary btn-lg" onClick={handleCTA}>
-                {user ? 'Start Booking Now' : 'Get Started Free'}
-              </button>
-              <button className="btn btn-ghost btn-lg" onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })}>
+              <button className="btn btn-primary btn-lg" onClick={() => document.getElementById('services').scrollIntoView({ behavior: 'smooth' })}>
                 Learn More
               </button>
             </div>

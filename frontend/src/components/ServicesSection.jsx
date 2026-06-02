@@ -4,19 +4,8 @@ export default function ServicesSection() {
   const services = [
     { id: 1, icon: '🔧', name: 'Plumbing', description: 'Repairs, installations, and maintenance' },
     { id: 2, icon: '⚡', name: 'Electrical Work', description: 'Safe and reliable electrical solutions' },
-    { id: 3, icon: '🛋️', name: 'Furniture Repair', description: 'Fix or refinish your furniture' },
-    { id: 4, icon: '🎨', name: 'Painting & Decorating', description: 'Fresh paint and design updates' },
-    { id: 5, icon: '🍽️', name: 'Appliance Repair', description: 'Get your appliances working again' },
     { id: 6, icon: '🔐', name: 'Locksmith', description: 'Lock repairs and installations' },
-    { id: 7, icon: '🪓', name: 'Carpentry', description: 'Custom woodwork and repairs' },
-    { id: 8, icon: '✨', name: 'Cleaning', description: 'Professional cleaning services' },
-    { id: 9, icon: '🧱', name: 'Tiling', description: 'Tile installation and repairs' },
-    { id: 10, icon: '🔥', name: 'Boiler Service', description: 'Maintenance and repair services' },
     { id: 11, icon: '🏠', name: 'Roof Repair', description: 'Fix leaks and damage' },
-    { id: 12, icon: '🪟', name: 'Window Repair', description: 'Glass and frame repairs' },
-    { id: 13, icon: '⬜', name: 'Floor Installation', description: 'New floors and refinishing' },
-    { id: 14, icon: '🌿', name: 'Garden & Landscaping', description: 'Outdoor space solutions' },
-    { id: 15, icon: '🐛', name: 'Pest Control', description: 'Professional pest management' },
   ];
 
   return (
